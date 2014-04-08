@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -159,7 +161,7 @@ public final class McCombatLevel extends JavaPlugin implements Listener{
         
     }
     
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoinEvent(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		updateLevel(player);
@@ -177,13 +179,12 @@ public final class McCombatLevel extends JavaPlugin implements Listener{
 		playerLevels.remove(player.getName());
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onChat(AsyncPlayerChatEvent event){
 		//check if prefix is enabled
 		if(!enablePrefix){
 			return;
 		}
-		
 		CommandSender player = event.getPlayer();
 		//append a level prefix to their name
 		if(player instanceof Player && playerLevels.get(player.getName()) != null){
@@ -200,6 +201,23 @@ public final class McCombatLevel extends JavaPlugin implements Listener{
         if(skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)|| skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED) ||skill.equals(SkillType.TAMING) ||skill.equals(SkillType.ACROBATICS)){
 	        updateLevel(player);
         }
+    }
+    
+    @EventHandler
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		String cmdName = cmd.getName();
+		Player player;
+		if(sender instanceof Player){
+			player = (Player) sender;
+		}else{
+			sender.sendMessage("You must be a player to execute this command.");
+    		return true;
+		}
+		if(cmdName.equalsIgnoreCase("level") || cmdName.equalsIgnoreCase("combatlevel")){
+			int level = playerLevels.get(player.getName());
+			player.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+		}
+		return true;
     }
     
     public void updateLevel(Player player){
