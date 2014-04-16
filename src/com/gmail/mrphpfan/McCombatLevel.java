@@ -203,7 +203,6 @@ public final class McCombatLevel extends JavaPlugin implements Listener{
         }
     }
     
-    @EventHandler
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 		String cmdName = cmd.getName();
 		Player player;
