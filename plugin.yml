@@ -1,6 +1,6 @@
 name: McCombatLevel
 main: com.gmail.mrphpfan.McCombatLevel
-version: 1.3
+version: 1.4
 depend: [mcMMO]
 
 commands:
