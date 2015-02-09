@@ -1,68 +1,70 @@
 package com.gmail.mrphpfan;
 
 import com.gmail.nossr50.api.ExperienceAPI;
-import com.gmail.nossr50.datatypes.skills.SkillType;
-import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 import com.google.common.collect.Maps;
 
-import java.io.File;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.util.NumberConversions;
 
 /**
  * @author Mrphpfan, games647
  */
-public final class McCombatLevel extends JavaPlugin implements Listener {
+public class McCombatLevel extends JavaPlugin {
+
+    private static final String OBJECTIVE_NAME = "display";
 
     private final Map<String, Integer> playerLevels = Maps.newHashMap();
 
-    private ScoreboardManager manager;
     private Scoreboard board;
     private Objective objective;
 
     private boolean enablePrefix = true;
     private boolean enableTag = true;
-    private String tagName = "Combat";
+    private String displayName = "Combat";
     private ChatColor tagColor = ChatColor.GREEN;
     private ChatColor prefixBracketColor = ChatColor.GOLD;
     private ChatColor prefixLevelColor = ChatColor.DARK_GREEN;
 
+    public boolean isTagEnabled() {
+        return enableTag;
+    }
+
+    public boolean isPrefixEnabled() {
+        return enablePrefix;
+    }
+
+    public ChatColor getPrefixBracketColor() {
+        return prefixBracketColor;
+    }
+
+    public ChatColor getPrefixColor() {
+        return prefixLevelColor;
+    }
+
     @Override
     public void onEnable() {
-        getServer().getPluginManager().registerEvents(this, this);
+        //register listener
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         loadConfiguration();
 
         if (enableTag) {
-            manager = Bukkit.getScoreboardManager();
-            board = manager.getMainScoreboard();
+            board = Bukkit.getScoreboardManager().getMainScoreboard();
 
-            objective = board.getObjective("display");
-            if (objective != null) {
-                //clear old data
-                objective.unregister();
-            }
+            removeObjective();
 
-            objective = board.registerNewObjective("display", "levels");
+            objective = board.registerNewObjective(OBJECTIVE_NAME, "dummy");
             objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(tagColor + tagName);
+            objective.setDisplayName(tagColor + displayName);
 
             //check if there are any players on yet and set their levels
             for (Player online : Bukkit.getOnlinePlayers()) {
@@ -70,180 +72,83 @@ public final class McCombatLevel extends JavaPlugin implements Listener {
             }
         }
 
+        //register commands
+        getCommand("combatlevel").setExecutor(new LevelCommand(this));
+
         //send the scoreboard initially to online players
         sendScoreboard();
-
-        getLogger().info("McCombatLevel Enabled.");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("McCombatLevel Disabled.");
+        removeObjective();
     }
 
     public void loadConfiguration() {
-        File pluginFolder = this.getDataFolder();
-        if (!pluginFolder.exists()) {
-            pluginFolder.mkdir();
-        }
-
         FileConfiguration config = this.getConfig();
 
         config.options().copyDefaults(true);
         this.saveConfig();
 
+        boolean changed = false;
+
         //enablePrefix
         if (config.get("enable_prefix") == null) {
             config.addDefault("enable_prefix", true);
-            this.saveConfig();
+            changed = true;
         }
 
         //enableTag
         if (config.get("enable_tag_level") == null) {
             config.addDefault("enable_tag_level", true);
-            this.saveConfig();
+            changed = true;
         }
 
         //tagName
         if (config.get("tag_name") == null) {
             config.addDefault("tag_name", "Combat");
-            this.saveConfig();
+            changed = true;
         }
 
         //tagColor
         if (config.get("tag_color") == null) {
             config.addDefault("tag_color", "GREEN");
-            this.saveConfig();
+            changed = true;
         }
 
         //prefixBracketColor
         if (config.get("prefix_bracket_color") == null) {
             config.addDefault("prefix_bracket_color", "GOLD");
-            this.saveConfig();
+            changed = true;
         }
 
         //prefixLevelColor
         if (config.get("prefix_level_color") == null) {
             config.addDefault("prefix_level_color", "DARK_GREEN");
+            changed = true;
+        }
+
+        if (changed) {
             this.saveConfig();
         }
 
         this.reloadConfig();
 
         //read in values
-        Object enableP = config.get("enable_prefix");
-        if (enableP != null) {
-            enablePrefix = (Boolean) enableP;
-        }
-
-        Object enableT = config.get("enable_tag_level");
-        if (enableT != null) {
-            enableTag = (Boolean) enableT;
-        }
-
-        Object tagN = config.get("tag_name");
-        if (tagN != null) {
-            tagName = (String) tagN;
-        }
-
-        Object tagC = config.get("tag_color");
-        if (tagC != null) {
-            String tagColorStr = (String) tagC;
-            tagColor = ChatColor.valueOf(tagColorStr.toUpperCase());
-        }
-
-        Object prefixBracketC = config.get("prefix_bracket_color");
-        if (prefixBracketC != null) {
-            String prefixBracketColorStr = (String) prefixBracketC;
-            prefixBracketColor = ChatColor.valueOf(prefixBracketColorStr.toUpperCase());
-        }
-
-        Object prefixLevelC = config.get("prefix_level_color");
-        if (prefixLevelC != null) {
-            String prefixLevelColorStr = (String) prefixLevelC;
-            prefixLevelColor = ChatColor.valueOf(prefixLevelColorStr.toUpperCase());
-        }
-
+        enablePrefix = config.getBoolean("enable_prefix", true);
+        enableTag = config.getBoolean("enable_tag_level", true);
+        displayName = config.getString("tag_name", "Combat");
+        tagColor = ChatColor.valueOf(config.getString("tag_color", "GREEN").toUpperCase());
+        prefixBracketColor = ChatColor.valueOf(config.getString("prefix_bracket_color", "GOLD").toUpperCase());
+        prefixLevelColor = ChatColor.valueOf(config.getString("prefix_level_color", "DARK_GREEN").toUpperCase());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        updateLevel(player);
-
-        //send them the scoreboard
+    public void sendScoreboard() {
         if (enableTag) {
-            player.setScoreboard(board);
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                online.setScoreboard(board);
+            }
         }
-    }
-
-    @EventHandler
-    public void onPlayerLogout(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        //remove the player from the hashmap
-        playerLevels.remove(player.getName());
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onChat(AsyncPlayerChatEvent event) {
-        //check if prefix is enabled
-        if (!enablePrefix) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        //append a level prefix to their name
-        if (playerLevels.get(player.getName()) != null) {
-            event.setFormat(prefixBracketColor + "[" + prefixLevelColor + playerLevels.get(player.getName()) + prefixBracketColor + "]" + ChatColor.RESET + event.getFormat());
-        }
-    }
-
-    @EventHandler
-    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
-        Player player = event.getPlayer();
-        SkillType skill = event.getSkill();
-
-        //only level up combat if one of the following was leveled
-        if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
-                || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
-                || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
-            updateLevel(player);
-        }
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("You must be a player to execute this command.");
-            return true;
-        }
-
-        if (cmd.getName().equalsIgnoreCase("combatlevel")) {
-            int level = playerLevels.get(sender.getName());
-            sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
-        }
-
-        return true;
-    }
-
-    public void updateLevel(Player player) {
-        int swords = ExperienceAPI.getLevel(player, "swords");
-        int axes = ExperienceAPI.getLevel(player, "axes");
-        int unarmed = ExperienceAPI.getLevel(player, "unarmed");
-        int archery = ExperienceAPI.getLevel(player, "archery");
-        int taming = ExperienceAPI.getLevel(player, "taming");
-        int acrobatics = ExperienceAPI.getLevel(player, "acrobatics");
-
-        int relevantSwords = swords <= 1000 ? swords : 1000;
-        int relevantAxes = axes <= 1000 ? axes : 1000;
-        int relevantUnarmed = unarmed <= 1000 ? unarmed : 1000;
-        int relevantArchery = archery <= 1000 ? archery : 1000;
-        int relevantTaming = taming <= 1000 ? taming : 1000;
-        int relevantAcrobatics = acrobatics <= 1000 ? acrobatics : 1000;
-
-        int combatLevel = (int) Math.floor((relevantSwords + relevantAxes + relevantUnarmed + relevantArchery + (.25 * relevantTaming) + (.25 * relevantAcrobatics)) / 45);
-
-        setLevel(player, combatLevel);
     }
 
     public void setLevel(Player player, int level) {
@@ -259,15 +164,37 @@ public final class McCombatLevel extends JavaPlugin implements Listener {
         }
     }
 
-    public void sendScoreboard() {
-        if (enableTag) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                online.setScoreboard(board);
-            }
+    //can return null if the player isn't in the hashmap
+    public Integer getCombatLevel(Player player) {
+        return playerLevels.get(player.getName());
+    }
+    public void removeCachedLevels(Player player) {
+        playerLevels.remove(player.getName());
+    }
+
+    public void updateLevel(Player player) {
+        int swords = calculateScore(player, "swords");
+        int axes = calculateScore(player, "axes");
+        int unarmed = calculateScore(player, "unarmed");
+        int archery = calculateScore(player, "archery");
+        int taming = calculateScore(player, "taming");
+        int acrobatics = calculateScore(player, "acrobatics");
+
+        int combatLevel = NumberConversions.round((swords + axes + unarmed + archery + (.25 * taming) + (.25 * acrobatics)) / 45);
+
+        setLevel(player, combatLevel);
+    }
+
+    private void removeObjective() {
+        objective = board.getObjective("display");
+        if (objective != null) {
+            //clear old data
+            objective.unregister();
         }
     }
 
-    public int getCombatLevel(Player player) {
-        return playerLevels.get(player.getName());
+    private int calculateScore(Player player, String skillType) {
+        int skillLevel = ExperienceAPI.getLevel(player, skillType);
+        return skillLevel <= 1000 ? skillLevel : 1000;
     }
 }
