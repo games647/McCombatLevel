@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gmail.mrphpfan</groupId>
+    <artifactId>mccombatlevel</artifactId>
+    <packaging>jar</packaging>
+
+    <name>McCombatLevel</name>
+    <inceptionYear>2014</inceptionYear>
+    <description>Displays a combat level above users heads and in chat based on their mcMMO stats that affect combat</description>
+    <version>1.5</version>
+    <url>http://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/games647/McCombatLevel/issues</url>
+    </issueManagement>
+
+    <scm>
+        <url>https://github.com/games647/McCombatLevel</url>
+        <connection>scm:git:git://github.com/games647/McCombatLevel.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:games647/McCombatLevel.git</developerConnection>
+    </scm>
+
+    <build>
+        <defaultGoal>package install</defaultGoal>
+        <!--Just use the project name to replace an old version of the plugin if the user does only copy-paste-->
+        <finalName>${project.name}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!-- Don't use 3.0 since the incremtalCompilation compiles every file even they aren't changed-->
+                <version>2.5.1</version>
+                <configuration>
+                    <!--So many people still use Java 6 ;( http://mcstats.org/global/#Java+Version-->
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--Replace variables-->
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <repositories>
+        <!--Bukkit and mcMMO API-->
+        <repository>
+            <id>md_5-releases</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <!--Compile with a low version, because the new getOnlinePlayers() won't be backwards compatibility.-->
+            <!--while the older version of that method still exists-->
+            <version>1.7.9-R0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gmail.nossr50.mcMMO</groupId>
+            <artifactId>mcMMO</artifactId>
+            <version>1.5.01-SNAPSHOT</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>

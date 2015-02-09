@@ -1,0 +1,23 @@
+name: ${project.name}
+main: com.gmail.mrphpfan.McCombatLevel
+version: ${project.version}
+
+# meta informations for plugin managers and auto updaters
+author:
+    - mrphpfan
+    - games647
+    - 'https://github.com/games647/McCombatLevel/graphs/contributors'
+description: |
+    ${project.description}
+website: ${project.url}
+dev-url: ${project.url}
+
+depend: [mcMMO]
+
+commands:
+  level:
+    description: See your combat level is.
+    usage: /level
+  combatlevel:
+    description: See your combat level is.
+    usage: /level
