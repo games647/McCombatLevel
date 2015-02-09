@@ -15,9 +15,7 @@ dev-url: ${project.url}
 depend: [mcMMO]
 
 commands:
-  level:
-    description: See your combat level is.
-    usage: /level
   combatlevel:
     description: See your combat level is.
     usage: /level
+    aliases: [level]

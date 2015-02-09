@@ -1,8 +1,11 @@
 package com.gmail.mrphpfan;
 
+import com.gmail.nossr50.api.ExperienceAPI;
+import com.gmail.nossr50.datatypes.skills.SkillType;
+import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
+import com.google.common.collect.Maps;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -24,203 +27,207 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
-import com.gmail.nossr50.api.ExperienceAPI;
-import com.gmail.nossr50.datatypes.skills.SkillType;
-import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
-
 /**
- * @author Mrphpfan
+ * @author Mrphpfan, games647
  */
-public final class McCombatLevel extends JavaPlugin implements Listener{
-	ArrayList<String> allLevels = new ArrayList<String>();
+public final class McCombatLevel extends JavaPlugin implements Listener {
 
-	Map<String, Integer> playerLevels = new HashMap<String, Integer>();
-	private ScoreboardManager manager;
-	private Scoreboard board;
-	private Objective objective;
-	private boolean enablePrefix = true;
-	private boolean enableTag = true;
-	private String tagName = "Combat";
-	private ChatColor tagColor = ChatColor.GREEN;
-	private ChatColor prefixBracketColor = ChatColor.GOLD;
-	private ChatColor prefixLevelColor = ChatColor.DARK_GREEN;
+    private final Map<String, Integer> playerLevels = Maps.newHashMap();
 
+    private ScoreboardManager manager;
+    private Scoreboard board;
+    private Objective objective;
 
-	@Override
-    public void onEnable(){
-		getServer().getPluginManager().registerEvents(this, this);
-		loadConfiguration();
+    private boolean enablePrefix = true;
+    private boolean enableTag = true;
+    private String tagName = "Combat";
+    private ChatColor tagColor = ChatColor.GREEN;
+    private ChatColor prefixBracketColor = ChatColor.GOLD;
+    private ChatColor prefixLevelColor = ChatColor.DARK_GREEN;
 
-		if(enableTag){
-			manager = Bukkit.getScoreboardManager();
-			board = manager.getNewScoreboard();
+    @Override
+    public void onEnable() {
+        getServer().getPluginManager().registerEvents(this, this);
+        loadConfiguration();
 
-			objective = board.registerNewObjective("display", "levels");
-			objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-			objective.setDisplayName(tagColor + tagName);
+        if (enableTag) {
+            manager = Bukkit.getScoreboardManager();
+            board = manager.getMainScoreboard();
 
-			//check if there are any players on yet and set their levels
-			for(Player online : Bukkit.getOnlinePlayers()){
-				updateLevel(online);
-			}
-		}
+            objective = board.getObjective("display");
+            if (objective != null) {
+                //clear old data
+                objective.unregister();
+            }
 
-		//send the scoreboard initially to online players
-		sendScoreboard();
+            objective = board.registerNewObjective("display", "levels");
+            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+            objective.setDisplayName(tagColor + tagName);
 
-		getLogger().info("McCombatLevel Enabled.");
+            //check if there are any players on yet and set their levels
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                updateLevel(online);
+            }
+        }
+
+        //send the scoreboard initially to online players
+        sendScoreboard();
+
+        getLogger().info("McCombatLevel Enabled.");
     }
 
     @Override
     public void onDisable() {
-    	getLogger().info("McCombatLevel Disabled.");
+        getLogger().info("McCombatLevel Disabled.");
     }
 
-    public void loadConfiguration(){
+    public void loadConfiguration() {
         File pluginFolder = this.getDataFolder();
-		if(!pluginFolder.exists()){
-			pluginFolder.mkdir();
-		}
+        if (!pluginFolder.exists()) {
+            pluginFolder.mkdir();
+        }
 
-		FileConfiguration config = this.getConfig();
+        FileConfiguration config = this.getConfig();
 
-		config.options().copyDefaults(true);
+        config.options().copyDefaults(true);
         this.saveConfig();
 
         //enablePrefix
-        if(config.get("enable_prefix") == null){
-        	config.addDefault("enable_prefix", true);
-	        this.saveConfig();
+        if (config.get("enable_prefix") == null) {
+            config.addDefault("enable_prefix", true);
+            this.saveConfig();
         }
 
         //enableTag
-        if(config.get("enable_tag_level") == null){
-        	config.addDefault("enable_tag_level", true);
-	        this.saveConfig();
+        if (config.get("enable_tag_level") == null) {
+            config.addDefault("enable_tag_level", true);
+            this.saveConfig();
         }
 
         //tagName
-        if(config.get("tag_name") == null){
-        	config.addDefault("tag_name", "Combat");
-	        this.saveConfig();
+        if (config.get("tag_name") == null) {
+            config.addDefault("tag_name", "Combat");
+            this.saveConfig();
         }
 
         //tagColor
-        if(config.get("tag_color") == null){
-        	config.addDefault("tag_color", "GREEN");
-	        this.saveConfig();
+        if (config.get("tag_color") == null) {
+            config.addDefault("tag_color", "GREEN");
+            this.saveConfig();
         }
 
         //prefixBracketColor
-        if(config.get("prefix_bracket_color") == null){
-        	config.addDefault("prefix_bracket_color", "GOLD");
-	        this.saveConfig();
+        if (config.get("prefix_bracket_color") == null) {
+            config.addDefault("prefix_bracket_color", "GOLD");
+            this.saveConfig();
         }
 
         //prefixLevelColor
-        if(config.get("prefix_level_color") == null){
-        	config.addDefault("prefix_level_color", "DARK_GREEN");
-	        this.saveConfig();
+        if (config.get("prefix_level_color") == null) {
+            config.addDefault("prefix_level_color", "DARK_GREEN");
+            this.saveConfig();
         }
 
         this.reloadConfig();
 
         //read in values
         Object enableP = config.get("enable_prefix");
-        if(enableP != null){
-        	enablePrefix = (Boolean) enableP;
+        if (enableP != null) {
+            enablePrefix = (Boolean) enableP;
         }
 
         Object enableT = config.get("enable_tag_level");
-        if(enableT != null){
-        	enableTag = (Boolean) enableT;
+        if (enableT != null) {
+            enableTag = (Boolean) enableT;
         }
 
         Object tagN = config.get("tag_name");
-        if(tagN != null){
-        	tagName = (String) tagN;
+        if (tagN != null) {
+            tagName = (String) tagN;
         }
 
         Object tagC = config.get("tag_color");
-        if(tagC != null){
-        	String tagColorStr = (String) tagC;
-        	tagColor = ChatColor.valueOf(tagColorStr.toUpperCase());
+        if (tagC != null) {
+            String tagColorStr = (String) tagC;
+            tagColor = ChatColor.valueOf(tagColorStr.toUpperCase());
         }
 
         Object prefixBracketC = config.get("prefix_bracket_color");
-        if(prefixBracketC != null){
-        	String prefixBracketColorStr = (String) prefixBracketC;
-        	prefixBracketColor = ChatColor.valueOf(prefixBracketColorStr.toUpperCase());
+        if (prefixBracketC != null) {
+            String prefixBracketColorStr = (String) prefixBracketC;
+            prefixBracketColor = ChatColor.valueOf(prefixBracketColorStr.toUpperCase());
         }
 
         Object prefixLevelC = config.get("prefix_level_color");
-        if(prefixLevelC != null){
-        	String prefixLevelColorStr = (String) prefixLevelC;
-        	prefixLevelColor = ChatColor.valueOf(prefixLevelColorStr.toUpperCase());
+        if (prefixLevelC != null) {
+            String prefixLevelColorStr = (String) prefixLevelC;
+            prefixLevelColor = ChatColor.valueOf(prefixLevelColorStr.toUpperCase());
         }
 
     }
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoinEvent(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		updateLevel(player);
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        updateLevel(player);
 
-		//send them the scoreboard
-		if(enableTag){
-			player.setScoreboard(board);
-		}
-	}
-
-	@EventHandler
-	public void onPlayerLogout(PlayerQuitEvent event){
-		Player player = event.getPlayer();
-		//remove the player from the hashmap
-		playerLevels.remove(player.getName());
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onChat(AsyncPlayerChatEvent event){
-		//check if prefix is enabled
-		if(!enablePrefix){
-			return;
-		}
-		CommandSender player = event.getPlayer();
-		//append a level prefix to their name
-		if(player instanceof Player && playerLevels.get(player.getName()) != null){
-			event.setFormat(prefixBracketColor + "[" + prefixLevelColor + playerLevels.get(player.getName()) + prefixBracketColor + "]" + ChatColor.RESET + event.getFormat());
-		}
-	}
+        //send them the scoreboard
+        if (enableTag) {
+            player.setScoreboard(board);
+        }
+    }
 
     @EventHandler
-    public void onPlayerLevelUp(final McMMOPlayerLevelUpEvent event){
+    public void onPlayerLogout(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        //remove the player from the hashmap
+        playerLevels.remove(player.getName());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onChat(AsyncPlayerChatEvent event) {
+        //check if prefix is enabled
+        if (!enablePrefix) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        //append a level prefix to their name
+        if (playerLevels.get(player.getName()) != null) {
+            event.setFormat(prefixBracketColor + "[" + prefixLevelColor + playerLevels.get(player.getName()) + prefixBracketColor + "]" + ChatColor.RESET + event.getFormat());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
         Player player = event.getPlayer();
         SkillType skill = event.getSkill();
 
         //only level up combat if one of the following was leveled
-        if(skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)|| skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED) ||skill.equals(SkillType.TAMING) ||skill.equals(SkillType.ACROBATICS)){
-	        updateLevel(player);
+        if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
+                || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
+                || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
+            updateLevel(player);
         }
     }
 
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		String cmdName = cmd.getName();
-		Player player;
-		if(sender instanceof Player){
-			player = (Player) sender;
-		}else{
-			sender.sendMessage("You must be a player to execute this command.");
-    		return true;
-		}
-		if(cmdName.equalsIgnoreCase("level") || cmdName.equalsIgnoreCase("combatlevel")){
-			int level = playerLevels.get(player.getName());
-			player.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
-		}
-		return true;
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You must be a player to execute this command.");
+            return true;
+        }
+
+        if (cmd.getName().equalsIgnoreCase("combatlevel")) {
+            int level = playerLevels.get(sender.getName());
+            sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+        }
+
+        return true;
     }
 
-    public void updateLevel(Player player){
-    	int swords = ExperienceAPI.getLevel(player, "swords");
+    public void updateLevel(Player player) {
+        int swords = ExperienceAPI.getLevel(player, "swords");
         int axes = ExperienceAPI.getLevel(player, "axes");
         int unarmed = ExperienceAPI.getLevel(player, "unarmed");
         int archery = ExperienceAPI.getLevel(player, "archery");
@@ -239,30 +246,28 @@ public final class McCombatLevel extends JavaPlugin implements Listener{
         setLevel(player, combatLevel);
     }
 
-    public void setLevel(Player player, int level){
-    	//map the player's name to the level
-    	playerLevels.put(player.getName(), level);
+    public void setLevel(Player player, int level) {
+        //map the player's name to the level
+        playerLevels.put(player.getName(), level);
 
-    	if(enableTag){
-	        //set my score on the scoreboard
-	        Score score = objective.getScore(player);
-			if(playerLevels.get(player.getName()) != null){
-				score.setScore(playerLevels.get(player.getName()));
-			}
-    	}
+        if (enableTag) {
+            //set my score on the scoreboard
+            Score score = objective.getScore(player);
+            if (playerLevels.get(player.getName()) != null) {
+                score.setScore(playerLevels.get(player.getName()));
+            }
+        }
     }
 
-    public void sendScoreboard(){
-    	if(enableTag){
-			for(Player online : Bukkit.getOnlinePlayers()){
-				online.setScoreboard(board);
-			}
-    	}
+    public void sendScoreboard() {
+        if (enableTag) {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                online.setScoreboard(board);
+            }
+        }
     }
 
-    public int getCombatLevel(Player player){
-    	return playerLevels.get(player.getName());
+    public int getCombatLevel(Player player) {
+        return playerLevels.get(player.getName());
     }
-
 }
-
