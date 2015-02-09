@@ -1,0 +1,6 @@
+enable_prefix: true
+enable_tag_level: true
+tag_name: Combat
+tag_color: GREEN
+prefix_bracket_color: GOLD
+prefix_level_color: DARK_GREEN

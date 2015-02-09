@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -16,16 +15,25 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
-    private final McCombatLevel pluginInstance;
+    protected final McCombatLevel pluginInstance;
 
     public PlayerListener(McCombatLevel plugin) {
         this.pluginInstance = plugin;
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        pluginInstance.updateLevel(player);
+        final Player player = event.getPlayer();
+
+        Bukkit.getScheduler().runTaskLater(pluginInstance, new Runnable() {
+            @Override
+            public void run() {
+                if (player.isOnline()) {
+                    //profiles are loaded async. We need to wait for it
+                    pluginInstance.updateLevel(player);
+                }
+            }
+        }, 3 * 20L);
 
         //send them the scoreboard
         if (pluginInstance.isTagEnabled()) {
@@ -39,14 +47,14 @@ public class PlayerListener implements Listener {
         pluginInstance.removeCachedLevels(event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         //remove the player from the hashmap
         pluginInstance.removeCachedLevels(event.getPlayer());
     }
 
     //todo make thread-safe
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
         if (!pluginInstance.isPrefixEnabled()) {
             //check if prefix is enabled
@@ -63,7 +71,7 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
         Player player = event.getPlayer();
         SkillType skill = event.getSkill();

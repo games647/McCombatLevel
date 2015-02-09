@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -84,71 +84,17 @@ public class McCombatLevel extends JavaPlugin {
         removeObjective();
     }
 
-    public void loadConfiguration() {
-        FileConfiguration config = this.getConfig();
-
-        config.options().copyDefaults(true);
-        this.saveConfig();
-
-        boolean changed = false;
-
-        //enablePrefix
-        if (config.get("enable_prefix") == null) {
-            config.addDefault("enable_prefix", true);
-            changed = true;
-        }
-
-        //enableTag
-        if (config.get("enable_tag_level") == null) {
-            config.addDefault("enable_tag_level", true);
-            changed = true;
-        }
-
-        //tagName
-        if (config.get("tag_name") == null) {
-            config.addDefault("tag_name", "Combat");
-            changed = true;
-        }
-
-        //tagColor
-        if (config.get("tag_color") == null) {
-            config.addDefault("tag_color", "GREEN");
-            changed = true;
-        }
-
-        //prefixBracketColor
-        if (config.get("prefix_bracket_color") == null) {
-            config.addDefault("prefix_bracket_color", "GOLD");
-            changed = true;
-        }
-
-        //prefixLevelColor
-        if (config.get("prefix_level_color") == null) {
-            config.addDefault("prefix_level_color", "DARK_GREEN");
-            changed = true;
-        }
-
-        if (changed) {
-            this.saveConfig();
-        }
-
-        this.reloadConfig();
-
-        //read in values
-        enablePrefix = config.getBoolean("enable_prefix", true);
-        enableTag = config.getBoolean("enable_tag_level", true);
-        displayName = config.getString("tag_name", "Combat");
-        tagColor = ChatColor.valueOf(config.getString("tag_color", "GREEN").toUpperCase());
-        prefixBracketColor = ChatColor.valueOf(config.getString("prefix_bracket_color", "GOLD").toUpperCase());
-        prefixLevelColor = ChatColor.valueOf(config.getString("prefix_level_color", "DARK_GREEN").toUpperCase());
-    }
-
     public void sendScoreboard() {
         if (enableTag) {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.setScoreboard(board);
             }
         }
+    }
+
+    //can return null if the player isn't in the hashmap
+    public Integer getCombatLevel(Player player) {
+        return playerLevels.get(player.getName());
     }
 
     public void setLevel(Player player, int level) {
@@ -164,25 +110,66 @@ public class McCombatLevel extends JavaPlugin {
         }
     }
 
-    //can return null if the player isn't in the hashmap
-    public Integer getCombatLevel(Player player) {
-        return playerLevels.get(player.getName());
-    }
     public void removeCachedLevels(Player player) {
         playerLevels.remove(player.getName());
     }
 
     public void updateLevel(Player player) {
-        int swords = calculateScore(player, "swords");
-        int axes = calculateScore(player, "axes");
-        int unarmed = calculateScore(player, "unarmed");
-        int archery = calculateScore(player, "archery");
-        int taming = calculateScore(player, "taming");
-        int acrobatics = calculateScore(player, "acrobatics");
+        try {
+            int swords = calculateScore(player, "swords");
+            int axes = calculateScore(player, "axes");
+            int unarmed = calculateScore(player, "unarmed");
+            int archery = calculateScore(player, "archery");
+            int taming = calculateScore(player, "taming");
+            int acrobatics = calculateScore(player, "acrobatics");
 
-        int combatLevel = NumberConversions.round((swords + axes + unarmed + archery + (.25 * taming) + (.25 * acrobatics)) / 45);
+            int combatLevel = NumberConversions.round((swords + axes + unarmed + archery + (.25 * taming) + (.25 * acrobatics)) / 45);
 
-        setLevel(player, combatLevel);
+            setLevel(player, combatLevel);
+        } catch (RuntimeException ex) {
+            //player not loaded yet
+            if (!ex.getClass().getSimpleName().equals("McMMOPlayerNotFoundException")) {
+                //don't use it directly it'll end up in a NoClassDefFoundError for older mcMMO versions
+                throw ex;
+            }
+        }
+    }
+
+    private int calculateScore(Player player, String skillType) {
+        int skillLevel = ExperienceAPI.getLevel(player, skillType);
+        return skillLevel <= 1000 ? skillLevel : 1000;
+    }
+
+    private void loadConfiguration() {
+        //create a config if none exists
+        saveDefaultConfig();
+
+        Configuration config = getConfig();
+        Configuration defConfig = config.getDefaults();
+
+        boolean changed = false;
+
+        //if a key doesn't exist add it to the config not just as default value
+        for (Map.Entry<String, Object> values : defConfig.getValues(true).entrySet()) {
+            String key = values.getKey();
+            Object value = values.getValue();
+            if (!config.isSet(key)) {
+                config.set(key, value);
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            this.saveConfig();
+        }
+
+        //read in values
+        enablePrefix = config.getBoolean("enable_prefix");
+        enableTag = config.getBoolean("enable_tag_level");
+        displayName = config.getString("tag_name");
+        tagColor = ChatColor.valueOf(config.getString("tag_color").toUpperCase());
+        prefixBracketColor = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
+        prefixLevelColor = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
     }
 
     private void removeObjective() {
@@ -191,10 +178,5 @@ public class McCombatLevel extends JavaPlugin {
             //clear old data
             objective.unregister();
         }
-    }
-
-    private int calculateScore(Player player, String skillType) {
-        int skillLevel = ExperienceAPI.getLevel(player, skillType);
-        return skillLevel <= 1000 ? skillLevel : 1000;
     }
 }
