@@ -36,14 +36,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!-- Don't use 3.0 since the incremtalCompilation compiles every file even they aren't changed-->
-                <version>2.5.1</version>
+                <version>3.2</version>
                 <configuration>
                     <!--So many people still use Java 6 ;( http://mcstats.org/global/#Java+Version-->
                     <source>1.6</source>
                     <target>1.6</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
+                    <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
         </plugins>

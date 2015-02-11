@@ -53,8 +53,6 @@ public class McCombatLevel extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        //register listener
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         loadConfiguration();
 
         if (enableTag) {
@@ -72,11 +70,14 @@ public class McCombatLevel extends JavaPlugin {
             }
         }
 
+        //send the scoreboard initially to online players
+        sendScoreboard();
+
         //register commands
         getCommand("combatlevel").setExecutor(new LevelCommand(this));
 
-        //send the scoreboard initially to online players
-        sendScoreboard();
+        //register listener
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
     }
 
     @Override
@@ -145,16 +146,13 @@ public class McCombatLevel extends JavaPlugin {
         saveDefaultConfig();
 
         Configuration config = getConfig();
-        Configuration defConfig = config.getDefaults();
-
         boolean changed = false;
 
         //if a key doesn't exist add it to the config not just as default value
-        for (Map.Entry<String, Object> values : defConfig.getValues(true).entrySet()) {
+        for (Map.Entry<String, Object> values : config.getDefaults().getValues(true).entrySet()) {
             String key = values.getKey();
-            Object value = values.getValue();
             if (!config.isSet(key)) {
-                config.set(key, value);
+                config.set(key, values.getValue());
                 changed = true;
             }
         }
