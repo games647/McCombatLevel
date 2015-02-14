@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -48,9 +47,15 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerKick(PlayerKickEvent event) {
-        //remove the player from the hashmap
-        pluginInstance.removeCachedLevels(event.getPlayer());
+    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
+        SkillType skill = event.getSkill();
+
+        //only level up combat if one of the following was leveled
+        if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
+                || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
+                || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
+            pluginInstance.updateLevel(event.getPlayer());
+        }
     }
 
     //todo make thread-safe
@@ -61,26 +66,12 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
         //append a level prefix to their name
-        Integer combatLevel = pluginInstance.getCombatLevel(player);
+        Integer combatLevel = pluginInstance.getCombatLevel(event.getPlayer());
         if (combatLevel != null) {
             ChatColor prefixColor = pluginInstance.getPrefixColor();
             ChatColor prefixBracketColor = pluginInstance.getPrefixBracketColor();
             event.setFormat(prefixBracketColor + "[" + prefixColor + combatLevel + prefixBracketColor + "]" + ChatColor.RESET + event.getFormat());
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
-        Player player = event.getPlayer();
-        SkillType skill = event.getSkill();
-
-        //only level up combat if one of the following was leveled
-        if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
-                || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
-                || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
-            pluginInstance.updateLevel(player);
         }
     }
 }

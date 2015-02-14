@@ -12,13 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.NumberConversions;
 
-/**
- * @author Mrphpfan, games647
- */
 public class McCombatLevel extends JavaPlugin {
 
     private static final String OBJECTIVE_NAME = "display";
@@ -99,20 +95,21 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     public void setLevel(Player player, int level) {
+        final String playerName = player.getName();
         //map the player's name to the level
-        playerLevels.put(player.getName(), level);
+        playerLevels.put(playerName, level);
 
         if (enableTag) {
             //set my score on the scoreboard
-            Score score = objective.getScore(player);
-            if (playerLevels.get(player.getName()) != null) {
-                score.setScore(playerLevels.get(player.getName()));
-            }
+            objective.getScore(playerName).setScore(level);
         }
     }
 
     public void removeCachedLevels(Player player) {
-        playerLevels.remove(player.getName());
+        final String playerName = player.getName();
+        playerLevels.remove(playerName);
+        //prevent that objective will be too big
+        board.resetScores(playerName);
     }
 
     public void updateLevel(Player player) {
