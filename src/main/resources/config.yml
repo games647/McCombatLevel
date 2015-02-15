@@ -1,6 +1,14 @@
+# True by default, this is the prefix to the left of the name in chat.
 enable_prefix: true
+
+#  True by default, this is the level that appears above the player's head
 enable_tag_level: true
-tag_name: Combat
-tag_color: GREEN
+
+# "&aCombat" by default, this is the text that appears after the level above the player's head
+tag_name: '&aCombat'
+
+# GOLD by default, change the color of the brackets in the level prefix
 prefix_bracket_color: GOLD
+
+# DARK_GREEN by default, change the color of the level in the prefix
 prefix_level_color: DARK_GREEN
