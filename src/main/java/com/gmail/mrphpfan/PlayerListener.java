@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
+    private static final String CHAT_VARIABLE = "[combatlevel]";
+
     protected final McCombatLevel pluginInstance;
 
     public PlayerListener(McCombatLevel plugin) {
@@ -58,7 +60,6 @@ public class PlayerListener implements Listener {
         }
     }
 
-    //todo make thread-safe
     @EventHandler(ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent event) {
         if (!pluginInstance.isPrefixEnabled()) {
@@ -69,6 +70,13 @@ public class PlayerListener implements Listener {
         //append a level prefix to their name
         Integer combatLevel = pluginInstance.getCombatLevel(event.getPlayer());
         if (combatLevel != null) {
+            String format = event.getFormat();
+            if (format.contains(CHAT_VARIABLE)) {
+                event.setFormat(format.replace(CHAT_VARIABLE, combatLevel.toString()));
+                //variable found - do not append the tag manually
+                return;
+            }
+
             ChatColor prefixColor = pluginInstance.getPrefixColor();
             ChatColor prefixBracket = pluginInstance.getPrefixBracket();
             event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]" + ChatColor.RESET + event.getFormat());
