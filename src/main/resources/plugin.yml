@@ -43,4 +43,3 @@ permissions:
 
     mccombatlevel.showLevelTag:
         description: 'Show the combat level under the name'
-

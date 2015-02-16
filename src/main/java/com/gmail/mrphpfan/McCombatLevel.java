@@ -6,8 +6,12 @@ import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.logging.Level;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -26,6 +30,9 @@ public class McCombatLevel extends JavaPlugin {
     //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
     private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
 
+    private final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
+    private boolean useEngine = true;
+
     private Scoreboard board;
     private Objective objective;
 
@@ -35,6 +42,8 @@ public class McCombatLevel extends JavaPlugin {
     private String displayName = ChatColor.GREEN + "Combat";
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
+    private String formula = "Math.round(swords + axes + unarmed + archery "
+            + "+ (.25 * taming) + (.25 * acrobatics) / 45)";
 
     public boolean isTagEnabled() {
         return enableTag;
@@ -58,7 +67,7 @@ public class McCombatLevel extends JavaPlugin {
 
         if (enableTag) {
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
-            board = Bukkit.getScoreboardManager().getMainScoreboard();
+            board = getServer().getScoreboardManager().getMainScoreboard();
 
             //as we use the main scoreboard now we have to clear old values to prevent memory leaks
             removeObjective();
@@ -68,7 +77,7 @@ public class McCombatLevel extends JavaPlugin {
             objective.setDisplayName(displayName);
 
             //check if there are any players on yet and set their levels
-            for (Player online : Bukkit.getOnlinePlayers()) {
+            for (Player online : getServer().getOnlinePlayers()) {
                 updateLevel(online);
             }
         }
@@ -91,7 +100,7 @@ public class McCombatLevel extends JavaPlugin {
 
     public void sendScoreboard() {
         if (enableTag) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
+            for (Player online : getServer().getOnlinePlayers()) {
                 //in order to see the level under the name
                 online.setScoreboard(board);
             }
@@ -128,20 +137,43 @@ public class McCombatLevel extends JavaPlugin {
         //Check if the player is loaded
         if (UserManager.hasPlayerDataKey(player)) {
             final McMMOPlayer mcMMOPlayer = UserManager.getPlayer(player);
-            int swords = calculateScore(mcMMOPlayer, SkillType.SWORDS);
-            int axes = calculateScore(mcMMOPlayer, SkillType.AXES);
-            int unarmed = calculateScore(mcMMOPlayer, SkillType.UNARMED);
-            int archery = calculateScore(mcMMOPlayer, SkillType.ARCHERY);
-            int taming = calculateScore(mcMMOPlayer, SkillType.TAMING);
-            int acrobatics = calculateScore(mcMMOPlayer, SkillType.ACROBATICS);
+            int swords = getLevel(mcMMOPlayer, SkillType.SWORDS);
+            int axes = getLevel(mcMMOPlayer, SkillType.AXES);
+            int unarmed = getLevel(mcMMOPlayer, SkillType.UNARMED);
+            int archery = getLevel(mcMMOPlayer, SkillType.ARCHERY);
+            int taming = getLevel(mcMMOPlayer, SkillType.TAMING);
+            int acrobatics = getLevel(mcMMOPlayer, SkillType.ACROBATICS);
 
-            int combatLevel = NumberConversions.round((swords + axes + unarmed + archery + (.25 * taming) + (.25 * acrobatics)) / 45);
+            if (useEngine && scriptEngine != null) {
+                Bindings variables = scriptEngine.createBindings();
+                variables.put("swords", swords);
+                variables.put("axes", axes);
+                variables.put("unarmed", unarmed);
+                variables.put("archery", archery);
+                variables.put("taming", taming);
+                variables.put("acrobatics", acrobatics);
 
-            setLevel(player, combatLevel);
+                try {
+                    Object result = scriptEngine.eval(formula, variables);
+                    if (result instanceof Number) {
+                        setLevel(player, ((Number) result).intValue());
+                    } else {
+                        getLogger().warning("Formula doesn't returned a number. Using default forumla now");
+                        useEngine = false;
+                    }
+                } catch (ScriptException ex) {
+                    getLogger().log(Level.SEVERE, "Combat level cannot be calculated. Using default formula now", ex);
+                    useEngine = false;
+                }
+            } else {
+                int combatLevel = NumberConversions.round((swords + axes + unarmed + archery
+                        + (.25 * taming) + (.25 * acrobatics)) / 45);
+                setLevel(player, combatLevel);
+            }
         }
     }
 
-    private int calculateScore(McMMOPlayer mcMMOPlayer, SkillType skillType) {
+    private int getLevel(McMMOPlayer mcMMOPlayer, SkillType skillType) {
         int skillLevel = mcMMOPlayer.getSkillLevel(skillType);
         //max of 1000 level
         return skillLevel <= 1000 ? skillLevel : 1000;
@@ -174,6 +206,11 @@ public class McCombatLevel extends JavaPlugin {
         displayName = ChatColor.translateAlternateColorCodes('&', config.getString("tag_name"));
         prefixBracket = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
+        formula = config.getString("formula");
+
+        if (scriptEngine == null) {
+            getLogger().warning("JavaScript Engine not found Ignoring formula. Please use Java 8");
+        }
     }
 
     private void removeObjective() {

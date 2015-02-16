@@ -35,8 +35,14 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        int level = pluginInstance.getCombatLevel(targetPlayer);
-        sender.sendMessage(ChatColor.GOLD + targetPlayer.getName() + "'s Combat level: " + ChatColor.DARK_GREEN + level);
+        Integer level = pluginInstance.getCombatLevel(targetPlayer);
+        if (level == null) {
+            sender.sendMessage(ChatColor.RED + "Not loaded yet");
+        } else {
+            sender.sendMessage(ChatColor.GOLD + targetPlayer.getName() + "'s Combat level: "
+                    + ChatColor.DARK_GREEN + level);
+        }
+
         return true;
     }
 
@@ -51,8 +57,13 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        int level = pluginInstance.getCombatLevel((Player) sender);
-        sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+        Integer level = pluginInstance.getCombatLevel((Player) sender);
+        if (level == null) {
+            sender.sendMessage(ChatColor.RED + "Not loaded yet");
+        } else {
+            sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+        }
+
         return true;
     }
 

@@ -79,7 +79,8 @@ public class PlayerListener implements Listener {
 
             ChatColor prefixColor = pluginInstance.getPrefixColor();
             ChatColor prefixBracket = pluginInstance.getPrefixBracket();
-            event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]" + ChatColor.RESET + event.getFormat());
+            event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
+                    + ChatColor.RESET + event.getFormat());
         }
     }
 }
