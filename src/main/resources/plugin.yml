@@ -20,3 +20,27 @@ commands:
     description: 'See the combat level'
     usage: /<command> [player]
     aliases: [level]
+
+permissions:
+    mccombatlevel.*:
+        description: 'Gives all permissions for mccombatlevel'
+        default: true
+        children:
+            mccombatlevel.levelcommand.*: true
+            mccombatlevel.showLevelTag: true
+
+    mccombatlevel.levelcommand.*:
+        description: 'Same as mccombatlevel.levelcommand'
+        children:
+            mccombatlevel.levelcommand.others: true
+            mccombatlevel.levelcommand.self: true
+
+    mccombatlevel.levelcommand.others:
+        description: 'Show other combat levels'
+
+    mccombatlevel.levelcommand.self:
+        description: 'Show the own level'
+
+    mccombatlevel.showLevelTag:
+        description: 'Show the combat level under the name'
+

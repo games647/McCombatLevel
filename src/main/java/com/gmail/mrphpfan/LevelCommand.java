@@ -25,6 +25,10 @@ public class LevelCommand implements CommandExecutor {
     }
 
     private boolean onLevelOther(CommandSender sender, String target) {
+        if (checkPermission(sender, "mccombatlevel.levelcommand.others")) {
+            return true;
+        }
+
         Player targetPlayer = Bukkit.getPlayer(target);
         if (targetPlayer == null) {
             sender.sendMessage(ChatColor.DARK_RED + "Player: '" + target + "' not found");
@@ -37,6 +41,10 @@ public class LevelCommand implements CommandExecutor {
     }
 
     private boolean onLevelSelf(CommandSender sender) {
+        if (checkPermission(sender, "mccombatlevel.levelcommand.self")) {
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
             //non player cannot have a combat level
             sender.sendMessage(ChatColor.DARK_RED + "You must be a player to execute this command");
@@ -46,5 +54,15 @@ public class LevelCommand implements CommandExecutor {
         int level = pluginInstance.getCombatLevel((Player) sender);
         sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
         return true;
+    }
+
+    private boolean checkPermission(CommandSender sender, String permissionNode) {
+        if (!sender.hasPermission(permissionNode)) {
+            sender.sendMessage(ChatColor.DARK_RED
+                    + "You don't have enough permission to see the combat level by command");
+            return true;
+        }
+
+        return false;
     }
 }

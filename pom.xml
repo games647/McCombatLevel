@@ -9,7 +9,7 @@
     <name>McCombatLevel</name>
     <inceptionYear>2014</inceptionYear>
     <description>Displays a combat level above users heads and in chat based on their mcMMO stats that affect combat</description>
-    <version>1.6</version>
+    <version>1.7</version>
     <url>http://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
 
     <properties>

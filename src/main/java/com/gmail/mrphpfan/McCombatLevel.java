@@ -23,7 +23,8 @@ public class McCombatLevel extends JavaPlugin {
     private static final String OBJECTIVE_NAME = "combat_level";
 
     //cached combat levels of online players
-    private final Map<String, Integer> playerLevels = Maps.newHashMap();
+    //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
+    private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
 
     private Scoreboard board;
     private Objective objective;
@@ -59,6 +60,7 @@ public class McCombatLevel extends JavaPlugin {
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
             board = Bukkit.getScoreboardManager().getMainScoreboard();
 
+            //as we use the main scoreboard now we have to clear old values to prevent memory leaks
             removeObjective();
 
             objective = board.registerNewObjective(OBJECTIVE_NAME, "dummy");
@@ -109,7 +111,7 @@ public class McCombatLevel extends JavaPlugin {
         //map the player's name to the level
         playerLevels.put(playerName, level);
 
-        if (enableTag) {
+        if (enableTag && player.hasPermission("mccombatlevel.showLevelTag")) {
             //set the score on the scoreboard
             objective.getScore(playerName).setScore(level);
         }
