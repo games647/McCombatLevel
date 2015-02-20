@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.logging.Level;
+
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -146,6 +147,7 @@ public class McCombatLevel extends JavaPlugin {
 
             if (useEngine && scriptEngine != null) {
                 Bindings variables = scriptEngine.createBindings();
+                //create variable for scripting
                 variables.put("swords", swords);
                 variables.put("axes", axes);
                 variables.put("unarmed", unarmed);
@@ -160,10 +162,12 @@ public class McCombatLevel extends JavaPlugin {
                     } else {
                         getLogger().warning("Formula doesn't returned a number. Using default forumla now");
                         useEngine = false;
+                        updateLevel(player);
                     }
                 } catch (ScriptException ex) {
                     getLogger().log(Level.SEVERE, "Combat level cannot be calculated. Using default formula now", ex);
                     useEngine = false;
+                    updateLevel(player);
                 }
             } else {
                 int combatLevel = NumberConversions.round((swords + axes + unarmed + archery
@@ -209,7 +213,7 @@ public class McCombatLevel extends JavaPlugin {
         formula = config.getString("formula");
 
         if (scriptEngine == null) {
-            getLogger().warning("JavaScript Engine not found Ignoring formula. Please use Java 8");
+            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please use Java 8");
         }
     }
 
