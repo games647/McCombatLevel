@@ -13,6 +13,6 @@ prefix_bracket_color: GOLD
 # DARK_GREEN by default, change the color of the level in the prefix
 prefix_level_color: DARK_GREEN
 
-# Math.round(Unarmed + Swords + Axes + Archery + (.25 * Acrobatics) + (.25 * Taming) / 45) by default
+# Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45) by default
 # How the combat is calculated
-formula: 'Math.round(swords + axes + unarmed + archery + (.25 * taming) + (.25 * acrobatics) / 45)'
+formula: 'Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45)'
