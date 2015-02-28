@@ -43,8 +43,8 @@ public class McCombatLevel extends JavaPlugin {
     private String displayName = ChatColor.GREEN + "Combat";
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
-    private String formula = "Math.round(swords + axes + unarmed + archery "
-            + "+ (.25 * taming) + (.25 * acrobatics) / 45)";
+    private String formula = "Math.round((Unarmed + Swords + Axes + Archery "
+            + "+ .25 * Acrobatics + .25 * Taming) / 45)";
 
     public boolean isTagEnabled() {
         return enableTag;
@@ -170,8 +170,8 @@ public class McCombatLevel extends JavaPlugin {
                     updateLevel(player);
                 }
             } else {
-                int combatLevel = NumberConversions.round((swords + axes + unarmed + archery
-                        + (.25 * taming) + (.25 * acrobatics)) / 45);
+                int combatLevel = NumberConversions.round((Unarmed + Swords + Axes + Archery
+                        + .25 * Acrobatics + .25 * Taming) / 45);
                 setLevel(player, combatLevel);
             }
         }
