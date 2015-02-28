@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -60,23 +61,32 @@ public class PlayerListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    //some chat plugins listen and change stuff on the default priority. In order
+    //to see these changes we need an higher priority.
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent event) {
         if (!pluginInstance.isPrefixEnabled()) {
             //check if prefix is enabled
             return;
         }
 
-        //append a level prefix to their name
         Integer combatLevel = pluginInstance.getCombatLevel(event.getPlayer());
-        if (combatLevel != null) {
-            String format = event.getFormat();
-            if (format.contains(CHAT_VARIABLE)) {
-                event.setFormat(format.replace(CHAT_VARIABLE, combatLevel.toString()));
-                //variable found - do not append the tag manually
-                return;
+        String format = event.getFormat();
+        if (format.contains(CHAT_VARIABLE)) {
+            String level;
+            if (combatLevel == null) {
+                level = "";
+            } else {
+                level = combatLevel.toString();
             }
 
+            event.setFormat(format.replace(CHAT_VARIABLE, level));
+            //variable found - do not append the tag manually
+            return;
+        }
+
+        //append a level prefix to their name
+        if (combatLevel != null) {
             ChatColor prefixColor = pluginInstance.getPrefixColor();
             ChatColor prefixBracket = pluginInstance.getPrefixBracket();
             event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
