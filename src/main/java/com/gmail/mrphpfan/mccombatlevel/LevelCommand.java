@@ -1,4 +1,4 @@
-package com.gmail.mrphpfan;
+package com.gmail.mrphpfan.mccombatlevel;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 
 public class LevelCommand implements CommandExecutor {
 
-    private final McCombatLevel pluginInstance;
+    private final McCombatLevel plugin;
 
     public LevelCommand(McCombatLevel plugin) {
-        this.pluginInstance = plugin;
+        this.plugin = plugin;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class LevelCommand implements CommandExecutor {
     }
 
     private boolean onLevelOther(CommandSender sender, String target) {
-        if (checkPermission(sender, "mccombatlevel.levelcommand.others")) {
+        if (checkPermission(sender, ".levelcommand.others")) {
             return true;
         }
 
@@ -35,7 +35,7 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        Integer level = pluginInstance.getCombatLevel(targetPlayer);
+        Integer level = plugin.getCombatLevel(targetPlayer);
         if (level == null) {
             sender.sendMessage(ChatColor.RED + "Not loaded yet");
         } else {
@@ -47,7 +47,7 @@ public class LevelCommand implements CommandExecutor {
     }
 
     private boolean onLevelSelf(CommandSender sender) {
-        if (checkPermission(sender, "mccombatlevel.levelcommand.self")) {
+        if (checkPermission(sender, ".levelcommand.self")) {
             return true;
         }
 
@@ -57,7 +57,7 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        Integer level = pluginInstance.getCombatLevel((Player) sender);
+        Integer level = plugin.getCombatLevel((Player) sender);
         if (level == null) {
             sender.sendMessage(ChatColor.RED + "Not loaded yet");
         } else {
@@ -68,7 +68,7 @@ public class LevelCommand implements CommandExecutor {
     }
 
     private boolean checkPermission(CommandSender sender, String permissionNode) {
-        if (!sender.hasPermission(permissionNode)) {
+        if (!sender.hasPermission(plugin.getName().toLowerCase() + permissionNode)) {
             sender.sendMessage(ChatColor.DARK_RED
                     + "You don't have enough permission to see the combat level by command");
             return true;

@@ -14,6 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <powermock.version>1.6.2</powermock.version>
     </properties>
 
     <issueManagement>
@@ -55,14 +56,28 @@
                 <!--Replace variables-->
                 <filtering>true</filtering>
             </resource>
+
+            <!--Add the license to jar in order to see it in the final jar-->
+            <resource>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
         </resources>
     </build>
 
     <repositories>
-        <!--Bukkit and mcMMO API-->
+        <!--Bukkit API-->
         <repository>
             <id>md_5-releases</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
+
+        <!--mcMMO API-->
+        <repository>
+            <id>drtshock-repo</id>
+            <url>http://ci.drtshock.net/plugin/repository/everything/</url>
         </repository>
     </repositories>
 
@@ -79,8 +94,23 @@
         <dependency>
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
-            <version>1.5.01-SNAPSHOT</version>
+            <version>1.5.03-dev</version>
             <optional>true</optional>
+        </dependency>
+
+        <!--Testing environment-->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <!--This includes JUnit 4.12-->
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -90,4 +120,39 @@
             <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
         </license>
     </licenses>
+
+    <profiles>
+        <profile>
+            <activation>
+                <!--Only run on JDK higher than 1.6-->
+                <jdk>[1.7,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <!--Check if this project is really Java 6 compatible-->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>animal-sniffer-maven-plugin</artifactId>
+                        <version>1.13</version>
+                        <configuration>
+                            <signature>
+                                <groupId>org.codehaus.mojo.signature</groupId>
+                                <artifactId>java16</artifactId>
+                                <version>1.0</version>
+                            </signature>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>animal-sniffer</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

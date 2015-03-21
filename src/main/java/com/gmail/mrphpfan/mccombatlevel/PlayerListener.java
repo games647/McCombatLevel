@@ -1,4 +1,4 @@
-package com.gmail.mrphpfan;
+package com.gmail.mrphpfan.mccombatlevel;
 
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
@@ -17,36 +17,37 @@ public class PlayerListener implements Listener {
 
     private static final String CHAT_VARIABLE = "[combatlevel]";
 
-    protected final McCombatLevel pluginInstance;
+    protected final McCombatLevel plugin;
 
     public PlayerListener(McCombatLevel plugin) {
-        this.pluginInstance = plugin;
+        this.plugin = plugin;
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        Bukkit.getScheduler().runTaskLater(pluginInstance, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
             @Override
             public void run() {
                 if (player.isOnline()) {
                     //profiles are loaded async. We need to wait for it
-                    pluginInstance.updateLevel(player);
+                    plugin.updateLevel(player);
                 }
             }
         }, 3 * 20L);
 
         //send them the scoreboard
-        if (pluginInstance.isTagEnabled()) {
+        if (plugin.isTagEnabled()) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
 
     @EventHandler
     public void onPlayerLogout(PlayerQuitEvent event) {
-        //remove the player from the hashmap
-        pluginInstance.removeCachedLevels(event.getPlayer());
+        //remove the player from the cache
+        plugin.removeCachedLevels(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -57,7 +58,7 @@ public class PlayerListener implements Listener {
         if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
                 || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
                 || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
-            pluginInstance.updateLevel(event.getPlayer());
+            plugin.updateLevel(event.getPlayer());
         }
     }
 
@@ -65,18 +66,16 @@ public class PlayerListener implements Listener {
     //to see these changes we need an higher priority.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (!pluginInstance.isPrefixEnabled()) {
+        if (!plugin.isPrefixEnabled()) {
             //check if prefix is enabled
             return;
         }
 
-        Integer combatLevel = pluginInstance.getCombatLevel(event.getPlayer());
+        Integer combatLevel = plugin.getCombatLevel(event.getPlayer());
         String format = event.getFormat();
         if (format.contains(CHAT_VARIABLE)) {
-            String level;
-            if (combatLevel == null) {
-                level = "";
-            } else {
+            String level = "";
+            if (combatLevel != null) {
                 level = combatLevel.toString();
             }
 
@@ -87,8 +86,8 @@ public class PlayerListener implements Listener {
 
         //append a level prefix to their name
         if (combatLevel != null) {
-            ChatColor prefixColor = pluginInstance.getPrefixColor();
-            ChatColor prefixBracket = pluginInstance.getPrefixBracket();
+            ChatColor prefixColor = plugin.getPrefixColor();
+            ChatColor prefixBracket = plugin.getPrefixBracket();
             event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
                     + ChatColor.RESET + event.getFormat());
         }

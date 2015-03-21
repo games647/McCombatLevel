@@ -1,17 +1,14 @@
-package com.gmail.mrphpfan;
+package com.gmail.mrphpfan.mccombatlevel;
 
+import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
+import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
+import com.gmail.mrphpfan.mccombatlevel.calculator.DefaultCalculator;
 import com.gmail.nossr50.datatypes.player.McMMOPlayer;
-import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.logging.Level;
-
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
@@ -20,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.util.NumberConversions;
 
 public class McCombatLevel extends JavaPlugin {
 
@@ -31,8 +27,7 @@ public class McCombatLevel extends JavaPlugin {
     //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
     private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
 
-    private final ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
-    private boolean useEngine = true;
+    private LevelCalculator levelCalculator;
 
     private Scoreboard board;
     private Objective objective;
@@ -43,8 +38,6 @@ public class McCombatLevel extends JavaPlugin {
     private String displayName = ChatColor.GREEN + "Combat";
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
-    private String formula = "Math.round((unarmed + swords + axes + archery "
-            + "+ .25 * acrobatics + .25 * taming) / 45)";
 
     public boolean isTagEnabled() {
         return enableTag;
@@ -65,6 +58,7 @@ public class McCombatLevel extends JavaPlugin {
     @Override
     public void onEnable() {
         loadConfiguration();
+
 
         if (enableTag) {
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
@@ -121,7 +115,7 @@ public class McCombatLevel extends JavaPlugin {
         //map the player's name to the level
         playerLevels.put(playerName, level);
 
-        if (enableTag && player.hasPermission("mccombatlevel.showLevelTag")) {
+        if (enableTag && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
             //set the score on the scoreboard
             objective.getScore(playerName).setScore(level);
         }
@@ -135,52 +129,29 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     public void updateLevel(Player player) {
-        //Check if the player is loaded
+        //Check if the player is loaded without exceptions, but with backwards compatibility
         if (UserManager.hasPlayerDataKey(player)) {
-            final McMMOPlayer mcMMOPlayer = UserManager.getPlayer(player);
-            int swords = getLevel(mcMMOPlayer, SkillType.SWORDS);
-            int axes = getLevel(mcMMOPlayer, SkillType.AXES);
-            int unarmed = getLevel(mcMMOPlayer, SkillType.UNARMED);
-            int archery = getLevel(mcMMOPlayer, SkillType.ARCHERY);
-            int taming = getLevel(mcMMOPlayer, SkillType.TAMING);
-            int acrobatics = getLevel(mcMMOPlayer, SkillType.ACROBATICS);
-
-            if (useEngine && scriptEngine != null) {
-                Bindings variables = scriptEngine.createBindings();
-                //create variable for scripting
-                variables.put("swords", swords);
-                variables.put("axes", axes);
-                variables.put("unarmed", unarmed);
-                variables.put("archery", archery);
-                variables.put("taming", taming);
-                variables.put("acrobatics", acrobatics);
-
-                try {
-                    Object result = scriptEngine.eval(formula, variables);
-                    if (result instanceof Number) {
-                        setLevel(player, ((Number) result).intValue());
-                    } else {
-                        getLogger().warning("Formula doesn't returned a number. Using default forumla now");
-                        useEngine = false;
-                        updateLevel(player);
-                    }
-                } catch (ScriptException ex) {
-                    getLogger().log(Level.SEVERE, "Combat level cannot be calculated. Using default formula now", ex);
-                    useEngine = false;
-                    updateLevel(player);
-                }
-            } else {
-                int combatLevel = NumberConversions.round((unarmed + swords + axes + archery
-                        + .25 * acrobatics + .25 * taming) / 45);
-                setLevel(player, combatLevel);
-            }
+            int newLevel = calculateLevel(UserManager.getPlayer(player));
+            setLevel(player, newLevel);
         }
     }
 
-    private int getLevel(McMMOPlayer mcMMOPlayer, SkillType skillType) {
-        int skillLevel = mcMMOPlayer.getSkillLevel(skillType);
-        //max of 1000 level
-        return skillLevel <= 1000 ? skillLevel : 1000;
+    public int calculateLevel(McMMOPlayer mcMMOPlayer) {
+        if (mcMMOPlayer == null || levelCalculator == null) {
+            return -1;
+        }
+
+        try {
+            return levelCalculator.calculateLevel(mcMMOPlayer);
+        } catch (Exception ex) {
+            getLogger().log(Level.WARNING, "Exception occured falling back", ex);
+            if (levelCalculator instanceof DefaultCalculator) {
+                levelCalculator = null;
+            }
+
+            levelCalculator = new DefaultCalculator();
+            return calculateLevel(mcMMOPlayer);
+        }
     }
 
     private void loadConfiguration() {
@@ -210,10 +181,14 @@ public class McCombatLevel extends JavaPlugin {
         displayName = ChatColor.translateAlternateColorCodes('&', config.getString("tag_name"));
         prefixBracket = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
-        formula = config.getString("formula");
 
-        if (scriptEngine == null) {
-            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please use Java 8");
+        JavaScriptCalculator scriptCalculator = new JavaScriptCalculator(config.getString("formula"));
+        if (scriptCalculator.isScriptEnabled()) {
+            levelCalculator = scriptCalculator;
+        } else {
+            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please update to Java 8"
+                    + " https://www.java.com/download/");
+            levelCalculator = new DefaultCalculator();
         }
     }
 
