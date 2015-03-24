@@ -50,7 +50,8 @@ public class PlayerListener implements Listener {
         plugin.removeCachedLevels(event.getPlayer());
     }
 
-    @EventHandler(ignoreCancelled = true)
+    //set it to low in order to update the level before other plugins want to get that value
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
         SkillType skill = event.getSkill();
 
@@ -64,7 +65,7 @@ public class PlayerListener implements Listener {
 
     //some chat plugins listen and change stuff on the default priority. In order
     //to see these changes we need an higher priority.
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onChat(AsyncPlayerChatEvent event) {
         if (!plugin.isPrefixEnabled()) {
             //check if prefix is enabled

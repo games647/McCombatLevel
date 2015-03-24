@@ -7,6 +7,9 @@ import org.bukkit.util.NumberConversions;
 
 public class DefaultCalculator implements LevelCalculator {
 
+    //max of 1000 level
+    private static final int MAX_LEVEL = 1000;
+
     @Override
     public int calculateLevel(McMMOPlayer mcMMOPlayer) {
         int swords = getLevel(mcMMOPlayer, SkillType.SWORDS);
@@ -22,7 +25,10 @@ public class DefaultCalculator implements LevelCalculator {
 
     private int getLevel(McMMOPlayer mcMMOPlayer, SkillType skillType) {
         int skillLevel = mcMMOPlayer.getSkillLevel(skillType);
-        //max of 1000 level
-        return skillLevel <= 1000 ? skillLevel : 1000;
+        if (skillLevel <= MAX_LEVEL) {
+            return skillLevel;
+        }
+
+        return MAX_LEVEL;
     }
 }

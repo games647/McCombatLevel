@@ -33,7 +33,7 @@ public class JavaScriptCalculator implements LevelCalculator {
                 throw new RuntimeException("Formula doesn't returned a number");
             }
         } catch (ScriptException ex) {
-            throw new RuntimeException("Combat level cannot be calculated", ex);
+            throw new RuntimeException("Combat level cannot be calculated", ex.getCause());
         }
     }
 

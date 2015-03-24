@@ -146,6 +146,7 @@ public class McCombatLevel extends JavaPlugin {
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Exception occured falling back", ex);
             if (levelCalculator instanceof DefaultCalculator) {
+                //nulling the calculator, because event the default replacer created an exception
                 levelCalculator = null;
             }
 

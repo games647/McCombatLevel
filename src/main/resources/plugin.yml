@@ -1,5 +1,5 @@
 name: ${project.name}
-main: com.gmail.mrphpfan.McCombatLevel
+main: ${project.groupId}.${project.artifactId}.${project.name}
 version: ${project.version}
 
 # meta informations for plugin managers and auto updaters
