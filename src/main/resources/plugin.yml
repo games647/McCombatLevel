@@ -16,10 +16,10 @@ depend: [mcMMO]
 
 commands:
   # choose a possible unique name
-  combatlevel:
+  ${project.artifactId}:
     description: 'See the combat level'
     usage: /<command> [player]
-    aliases: [level]
+    aliases: [level, combatlevel]
 
 permissions:
     mccombatlevel.*:

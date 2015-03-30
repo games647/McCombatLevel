@@ -24,8 +24,8 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerJoinEvent(PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
+    public void onPlayerJoinEvent(PlayerJoinEvent joinEvent) {
+        final Player player = joinEvent.getPlayer();
 
         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
@@ -36,7 +36,7 @@ public class PlayerListener implements Listener {
                     plugin.updateLevel(player);
                 }
             }
-        }, 3 * 20L);
+        }, 5 * 20L);
 
         //send them the scoreboard
         if (plugin.isTagEnabled()) {
@@ -45,42 +45,42 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLogout(PlayerQuitEvent event) {
+    public void onPlayerLogout(PlayerQuitEvent quitEvent) {
         //remove the player from the cache
-        plugin.removeCachedLevels(event.getPlayer());
+        plugin.removeCachedLevels(quitEvent.getPlayer());
     }
 
     //set it to low in order to update the level before other plugins want to get that value
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent event) {
-        SkillType skill = event.getSkill();
+    public void onPlayerLevelUp(McMMOPlayerLevelUpEvent levelUpEvent) {
+        SkillType skill = levelUpEvent.getSkill();
 
         //only level up combat if one of the following was leveled
         if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
                 || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
                 || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
-            plugin.updateLevel(event.getPlayer());
+            plugin.updateLevel(levelUpEvent.getPlayer());
         }
     }
 
     //some chat plugins listen and change stuff on the default priority. In order
     //to see these changes we need an higher priority.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(AsyncPlayerChatEvent chatEvent) {
         if (!plugin.isPrefixEnabled()) {
             //check if prefix is enabled
             return;
         }
 
-        Integer combatLevel = plugin.getCombatLevel(event.getPlayer());
-        String format = event.getFormat();
+        Integer combatLevel = plugin.getCombatLevel(chatEvent.getPlayer());
+        String format = chatEvent.getFormat();
         if (format.contains(CHAT_VARIABLE)) {
             String level = "";
             if (combatLevel != null) {
                 level = combatLevel.toString();
             }
 
-            event.setFormat(format.replace(CHAT_VARIABLE, level));
+            chatEvent.setFormat(format.replace(CHAT_VARIABLE, level));
             //variable found - do not append the tag manually
             return;
         }
@@ -89,8 +89,8 @@ public class PlayerListener implements Listener {
         if (combatLevel != null) {
             ChatColor prefixColor = plugin.getPrefixColor();
             ChatColor prefixBracket = plugin.getPrefixBracket();
-            event.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
-                    + ChatColor.RESET + event.getFormat());
+            chatEvent.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
+                    + ChatColor.RESET + chatEvent.getFormat());
         }
     }
 }

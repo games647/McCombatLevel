@@ -28,6 +28,7 @@ public class McCombatLevel extends JavaPlugin {
     private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
 
     private LevelCalculator levelCalculator;
+    private boolean oldScoreboardAPI;
 
     private Scoreboard board;
     private Objective objective;
@@ -55,12 +56,17 @@ public class McCombatLevel extends JavaPlugin {
         return prefixLevel;
     }
 
+    public void setLevelCalculator(LevelCalculator newCalculator) {
+        levelCalculator = newCalculator;
+    }
+
     @Override
     public void onEnable() {
         loadConfiguration();
 
-
         if (enableTag) {
+            oldScoreboardAPI = isOldScoreboardAPI();
+
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
             board = getServer().getScoreboardManager().getMainScoreboard();
 
@@ -117,7 +123,11 @@ public class McCombatLevel extends JavaPlugin {
 
         if (enableTag && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
             //set the score on the scoreboard
-            objective.getScore(playerName).setScore(level);
+            if (oldScoreboardAPI) {
+                objective.getScore(new FastOfflinePlayer(playerName)).setScore(level);
+            } else {
+                objective.getScore(playerName).setScore(level);
+            }
         }
     }
 
@@ -125,12 +135,16 @@ public class McCombatLevel extends JavaPlugin {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        board.resetScores(playerName);
+        if (oldScoreboardAPI) {
+            board.resetScores(new FastOfflinePlayer(playerName));
+        } else {
+            board.resetScores(playerName);
+        }
     }
 
     public void updateLevel(Player player) {
-        //Check if the player is loaded without exceptions, but with backwards compatibility
         if (UserManager.hasPlayerDataKey(player)) {
+            //Check if the player is loaded without exceptions, but with backwards compatibility
             int newLevel = calculateLevel(UserManager.getPlayer(player));
             setLevel(player, newLevel);
         }
@@ -200,5 +214,18 @@ public class McCombatLevel extends JavaPlugin {
             //clear old data
             toRemove.unregister();
         }
+    }
+
+    private boolean isOldScoreboardAPI() {
+        try {
+            Objective.class.getDeclaredMethod("getScore", String.class);
+        } catch (NoSuchMethodException noSuchMethodEx) {
+            //since we have an extra class for it (FastOfflinePlayer)
+            //we can fail silently
+            return true;
+        }
+
+        //We have access to the new method
+        return false;
     }
 }
