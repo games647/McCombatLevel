@@ -135,10 +135,12 @@ public class McCombatLevel extends JavaPlugin {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        if (oldScoreboardAPI) {
-            board.resetScores(new FastOfflinePlayer(playerName));
-        } else {
-            board.resetScores(playerName);
+        if (enableTag) {
+            if (oldScoreboardAPI) {
+                board.resetScores(new FastOfflinePlayer(playerName));
+            } else {
+                board.resetScores(playerName);
+            }
         }
     }
 
@@ -209,10 +211,12 @@ public class McCombatLevel extends JavaPlugin {
 
     private void removeObjective() {
         //remove the existed objective if the reference changed
-        Objective toRemove = board.getObjective(OBJECTIVE_NAME);
-        if (toRemove != null) {
-            //clear old data
-            toRemove.unregister();
+        if (board != null) {
+            Objective toRemove = board.getObjective(OBJECTIVE_NAME);
+            if (toRemove != null) {
+                //clear all old data
+                toRemove.unregister();
+            }
         }
     }
 
