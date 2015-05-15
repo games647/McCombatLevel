@@ -121,6 +121,10 @@ public class McCombatLevel extends JavaPlugin {
         
         // get old level or -1 if player was not loaded
         int oldLevel = playerLevels.containsKey(playerName) ? playerLevels.get(playerName) : -1;
+        if (oldLevel == level) {
+        	// do nothing if old level == new level
+        	return;
+        }
         
         // create and call event
         PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
