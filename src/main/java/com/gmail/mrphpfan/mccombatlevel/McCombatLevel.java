@@ -118,15 +118,25 @@ public class McCombatLevel extends JavaPlugin {
 
     public void setLevel(Player player, int level) {
         final String playerName = player.getName();
-        //map the player's name to the level
-        playerLevels.put(playerName, level);
+        
+        // get old level or -1 if player was not loaded
+        int oldLevel = playerLevels.containsKey(playerName) ? playerLevels.get(playerName) : -1;
+        
+        // create and call event
+        PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
+        getServer().getPluginManager().callEvent(event);
+        
+        if (!event.isCancelled()) {
+            //map the player's name to the level
+            playerLevels.put(playerName, event.getNewLevel());
 
-        if (enableTag && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
-            //set the score on the scoreboard
-            if (oldScoreboardAPI) {
-                objective.getScore(new FastOfflinePlayer(playerName)).setScore(level);
-            } else {
-                objective.getScore(playerName).setScore(level);
+            if (enableTag && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
+                //set the score on the scoreboard
+                if (oldScoreboardAPI) {
+                    objective.getScore(new FastOfflinePlayer(playerName)).setScore(level);
+                } else {
+                    objective.getScore(playerName).setScore(level);
+                }
             }
         }
     }
