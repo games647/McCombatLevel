@@ -1,6 +1,5 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
-import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 import org.bukkit.Bukkit;
@@ -53,14 +52,7 @@ public class PlayerListener implements Listener {
     //set it to low in order to update the level before other plugins want to get that value
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerLevelUp(McMMOPlayerLevelUpEvent levelUpEvent) {
-        SkillType skill = levelUpEvent.getSkill();
-
-        //only level up combat if one of the following was leveled
-        if (skill.equals(SkillType.SWORDS) || skill.equals(SkillType.ARCHERY)
-                || skill.equals(SkillType.AXES) || skill.equals(SkillType.UNARMED)
-                || skill.equals(SkillType.TAMING) || skill.equals(SkillType.ACROBATICS)) {
-            plugin.updateLevel(levelUpEvent.getPlayer());
-        }
+        plugin.updateLevel(levelUpEvent.getPlayer());
     }
 
     //some chat plugins listen and change stuff on the default priority. In order
