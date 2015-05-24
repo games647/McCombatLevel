@@ -26,16 +26,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent joinEvent) {
         final Player player = joinEvent.getPlayer();
 
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                if (player.isOnline()) {
-                    //profiles are loaded async. We need to wait for it
-                    plugin.updateLevel(player);
-                }
-            }
-        }, 5 * 20L);
+        Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 5 * 20L);
 
         //send them the scoreboard
         if (plugin.isTagEnabled()) {
