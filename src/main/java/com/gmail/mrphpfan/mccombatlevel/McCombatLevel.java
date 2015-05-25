@@ -14,24 +14,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class McCombatLevel extends JavaPlugin {
-
-    //should be unique
-    private static final String OBJECTIVE_NAME = "combat_level";
 
     //cached combat levels of online players
     //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
     private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
 
     private LevelCalculator levelCalculator;
-    private boolean oldScoreboardAPI;
 
-    private Scoreboard board;
-    private Objective objective;
+    private PlayerScoreboards scoreboardManger;
+    private Effects effects;
 
     //configuration values
     private boolean enablePrefix = true;
@@ -65,17 +59,9 @@ public class McCombatLevel extends JavaPlugin {
         loadConfiguration();
 
         if (enableTag) {
-            oldScoreboardAPI = isOldScoreboardAPI();
-
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
-            board = getServer().getScoreboardManager().getMainScoreboard();
-
-            //as we use the main scoreboard now we have to clear old values to prevent memory leaks
-            removeObjective();
-
-            objective = board.registerNewObjective(OBJECTIVE_NAME, "dummy");
-            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(displayName);
+            Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
+            scoreboardManger = new PlayerScoreboards(mainScoreboard, displayName);
 
             //check if there are any players on yet and set their levels
             for (Player online : getServer().getOnlinePlayers()) {
@@ -84,7 +70,7 @@ public class McCombatLevel extends JavaPlugin {
         }
 
         //send the scoreboard initially to online players
-        sendScoreboard();
+        sendAllScoreboard();
 
         //register commands
         getCommand("combatlevel").setExecutor(new LevelCommand(this));
@@ -96,15 +82,14 @@ public class McCombatLevel extends JavaPlugin {
     @Override
     public void onDisable() {
         //remove our objective, so it won't display if the plugin is deactivated
-        removeObjective();
+        if (scoreboardManger != null) {
+            scoreboardManger.removeObjective();
+        }
     }
 
-    public void sendScoreboard() {
+    public void sendAllScoreboard() {
         if (enableTag) {
-            for (Player online : getServer().getOnlinePlayers()) {
-                //in order to see the level under the name
-                online.setScoreboard(board);
-            }
+            scoreboardManger.sendAllScoreboard();
         }
     }
 
@@ -134,13 +119,13 @@ public class McCombatLevel extends JavaPlugin {
             //map the player's name to the level
             playerLevels.put(playerName, event.getNewLevel());
 
-            if (enableTag && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
-                //set the score on the scoreboard
-                if (oldScoreboardAPI) {
-                    objective.getScore(new FastOfflinePlayer(playerName)).setScore(level);
-                } else {
-                    objective.getScore(playerName).setScore(level);
-                }
+            if (effects != null && player.hasPermission(getName().toLowerCase() + ".effect")) {
+                effects.playEffect(player);
+            }
+
+            if (enableTag && scoreboardManger != null
+                    && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
+                scoreboardManger.setScore(playerName, level);
             }
         }
     }
@@ -149,12 +134,8 @@ public class McCombatLevel extends JavaPlugin {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        if (enableTag) {
-            if (oldScoreboardAPI) {
-                board.resetScores(new FastOfflinePlayer(playerName));
-            } else {
-                board.resetScores(playerName);
-            }
+        if (enableTag && scoreboardManger != null) {
+            scoreboardManger.remove(playerName);
         }
     }
 
@@ -202,7 +183,7 @@ public class McCombatLevel extends JavaPlugin {
         }
 
         if (changed) {
-            //update the config if changed something
+            //update the config if something changed
             saveConfig();
         }
 
@@ -213,6 +194,9 @@ public class McCombatLevel extends JavaPlugin {
         prefixBracket = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
 
+        //effects
+        effects = Effects.create(config.getConfigurationSection("effects"));
+
         JavaScriptCalculator scriptCalculator = new JavaScriptCalculator(config.getString("formula"));
         if (scriptCalculator.isScriptEnabled()) {
             levelCalculator = scriptCalculator;
@@ -221,29 +205,5 @@ public class McCombatLevel extends JavaPlugin {
                     + " https://www.java.com/download/");
             levelCalculator = new DefaultCalculator();
         }
-    }
-
-    private void removeObjective() {
-        //remove the existed objective if the reference changed
-        if (board != null) {
-            Objective toRemove = board.getObjective(OBJECTIVE_NAME);
-            if (toRemove != null) {
-                //clear all old data
-                toRemove.unregister();
-            }
-        }
-    }
-
-    private boolean isOldScoreboardAPI() {
-        try {
-            Objective.class.getDeclaredMethod("getScore", String.class);
-        } catch (NoSuchMethodException noSuchMethodEx) {
-            //since we have an extra class for it (FastOfflinePlayer)
-            //we can fail silently
-            return true;
-        }
-
-        //We have access to the new method
-        return false;
     }
 }

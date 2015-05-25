@@ -22,24 +22,27 @@ commands:
     aliases: [level, combatlevel]
 
 permissions:
-    mccombatlevel.*:
+    ${project.artifactId}.*:
         description: 'Gives all permissions for mccombatlevel'
         default: true
         children:
             mccombatlevel.levelcommand.*: true
             mccombatlevel.showLevelTag: true
 
-    mccombatlevel.levelcommand.*:
+    ${project.artifactId}.levelcommand.*:
         description: 'Same as mccombatlevel.levelcommand'
         children:
-            mccombatlevel.levelcommand.others: true
-            mccombatlevel.levelcommand.self: true
+            ${project.artifactId}.levelcommand.others: true
+            ${project.artifactId}.levelcommand.self: true
 
-    mccombatlevel.levelcommand.others:
+    ${project.artifactId}.levelcommand.others:
         description: 'Show other combat levels'
 
-    mccombatlevel.levelcommand.self:
+    ${project.artifactId}.levelcommand.self:
         description: 'Show the own level'
 
-    mccombatlevel.showLevelTag:
+    ${project.artifactId}.showLevelTag:
         description: 'Show the combat level under the name'
+
+    ${project.artifactId}.effect:
+        description: 'Play sound and lightning effect on level up'
