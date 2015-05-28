@@ -3,7 +3,7 @@ package com.gmail.mrphpfan.mccombatlevel;
 import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.DefaultCalculator;
-import com.gmail.nossr50.datatypes.player.McMMOPlayer;
+import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
 
@@ -142,12 +142,12 @@ public class McCombatLevel extends JavaPlugin {
     public void updateLevel(Player player) {
         if (UserManager.hasPlayerDataKey(player)) {
             //Check if the player is loaded without exceptions, but with backwards compatibility
-            int newLevel = calculateLevel(UserManager.getPlayer(player));
+            int newLevel = calculateLevel(UserManager.getPlayer(player).getProfile());
             setLevel(player, newLevel);
         }
     }
 
-    public int calculateLevel(McMMOPlayer mcMMOPlayer) {
+    public int calculateLevel(PlayerProfile mcMMOPlayer) {
         if (mcMMOPlayer == null || levelCalculator == null) {
             return -1;
         }
@@ -195,7 +195,7 @@ public class McCombatLevel extends JavaPlugin {
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
 
         //effects
-        effects = Effects.create(config.getConfigurationSection("effects"));
+        effects = Effects.create(config.getConfigurationSection("effect"));
 
         JavaScriptCalculator scriptCalculator = new JavaScriptCalculator(config.getString("formula"));
         if (scriptCalculator.isScriptEnabled()) {
