@@ -14,7 +14,13 @@ public class Effects {
 
         ConfigurationSection soundSection = configSection.getConfigurationSection("sound");
         String soundType = soundSection.getString("type");
-        Sound sound = Sound.valueOf(soundType.toUpperCase(Locale.ENGLISH));
+
+        Sound sound;
+        try {
+            sound = Sound.valueOf(soundType.toUpperCase(Locale.ENGLISH));
+        } catch (IllegalArgumentException argumentException) {
+            sound = null;
+        }
 
         float pitch = (float) soundSection.getDouble("pitch");
         float volume = (float) soundSection.getDouble("volume");
