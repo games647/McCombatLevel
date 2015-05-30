@@ -13,6 +13,7 @@ website: ${project.url}
 dev-url: ${project.url}
 
 depend: [mcMMO]
+softdepend: [Citizens]
 
 commands:
   # choose a possible unique name

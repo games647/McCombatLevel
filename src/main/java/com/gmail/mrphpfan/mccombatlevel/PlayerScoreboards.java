@@ -11,10 +11,10 @@ public class PlayerScoreboards {
     //should be unique
     private static final String OBJECTIVE_NAME = "combat_level";
 
-    private Scoreboard board;
-    private Objective objective;
+    private final Scoreboard board;
+    private final Objective objective;
 
-    private boolean oldScoreboardAPI;
+    private final boolean oldScoreboardAPI;
 
     public PlayerScoreboards(Scoreboard board, String displayName) {
         this.board = board;

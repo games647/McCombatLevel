@@ -79,6 +79,12 @@
             <id>drtshock-repo</id>
             <url>http://ci.drtshock.net/plugin/repository/everything/</url>
         </repository>
+
+        <!--citizens API-->
+        <repository>
+            <id>citizens-repo</id>
+            <url>http://repo.citizensnpcs.co/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -95,6 +101,13 @@
             <groupId>com.gmail.nossr50.mcMMO</groupId>
             <artifactId>mcMMO</artifactId>
             <version>1.5.03-dev</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>net.citizensnpcs</groupId>
+            <artifactId>citizensapi</artifactId>
+            <version>2.0.14-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 

@@ -3,6 +3,7 @@ package com.gmail.mrphpfan.mccombatlevel;
 import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.DefaultCalculator;
+import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
@@ -26,6 +27,7 @@ public class McCombatLevel extends JavaPlugin {
 
     private PlayerScoreboards scoreboardManger;
     private Effects effects;
+    private NPCListener npcListener;
 
     //configuration values
     private boolean enablePrefix = true;
@@ -54,6 +56,10 @@ public class McCombatLevel extends JavaPlugin {
         levelCalculator = newCalculator;
     }
 
+    public PlayerScoreboards getScoreboardManger() {
+        return scoreboardManger;
+    }
+
     @Override
     public void onEnable() {
         loadConfiguration();
@@ -67,16 +73,23 @@ public class McCombatLevel extends JavaPlugin {
             for (Player online : getServer().getOnlinePlayers()) {
                 updateLevel(online);
             }
-        }
 
-        //send the scoreboard initially to online players
-        sendAllScoreboard();
+            //send the scoreboard initially to online players
+            scoreboardManger.sendAllScoreboard();
+        }
 
         //register commands
         getCommand("combatlevel").setExecutor(new LevelCommand(this));
 
         //register listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+
+        //register citizens/npc integration
+        if (getServer().getPluginManager().isPluginEnabled("Citizens")
+                && getConfig().getBoolean("npc.enabled")) {
+            npcListener = new NPCListener(this, getConfig().getConfigurationSection("npc"));
+            getServer().getPluginManager().registerEvents(npcListener, this);
+        }
     }
 
     @Override
@@ -85,12 +98,8 @@ public class McCombatLevel extends JavaPlugin {
         if (scoreboardManger != null) {
             scoreboardManger.removeObjective();
         }
-    }
 
-    public void sendAllScoreboard() {
-        if (enableTag) {
-            scoreboardManger.sendAllScoreboard();
-        }
+        npcListener = null;
     }
 
     /**
@@ -134,7 +143,8 @@ public class McCombatLevel extends JavaPlugin {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        if (enableTag && scoreboardManger != null) {
+        if (enableTag && scoreboardManger != null
+                && (npcListener == null || npcListener.existsNPC(playerName))) {
             scoreboardManger.remove(playerName);
         }
     }

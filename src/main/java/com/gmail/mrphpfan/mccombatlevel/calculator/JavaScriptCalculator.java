@@ -1,6 +1,6 @@
 package com.gmail.mrphpfan.mccombatlevel.calculator;
 
-import com.gmail.nossr50.datatypes.player.McMMOPlayer;
+import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 
 import javax.script.Bindings;
@@ -18,11 +18,11 @@ public class JavaScriptCalculator implements LevelCalculator {
     }
 
     @Override
-    public int calculateLevel(McMMOPlayer mcMMOPlayer) {
+    public int calculateLevel(PlayerProfile mcMMOProfile) {
         Bindings variables = scriptEngine.createBindings();
         for (SkillType skillType : SkillType.values()) {
             //create variables for scripting
-            variables.put(skillType.toString().toLowerCase(), mcMMOPlayer.getSkillLevel(skillType));
+            variables.put(skillType.toString().toLowerCase(), mcMMOProfile.getSkillLevel(skillType));
         }
 
         try {

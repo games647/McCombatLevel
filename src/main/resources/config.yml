@@ -25,3 +25,13 @@ effect:
         type: ''
         pitch: 0.1
         volume: 1
+
+# Citizens npc integration
+npc:
+    # Should the integration be enabled; As soon as you activate the level feature the client will give them 0
+    # as default anyway
+    enabled: false
+    # custom default value
+    default: 0
+    # Should this plugin look for offline players with the same name in the mcMMO database
+    lookupOffline: true

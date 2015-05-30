@@ -1,8 +1,8 @@
 package com.gmail.mrphpfan.mccombatlevel.calculator;
 
-import com.gmail.nossr50.datatypes.player.McMMOPlayer;
+import com.gmail.nossr50.datatypes.player.PlayerProfile;
 
 public interface LevelCalculator {
 
-    int calculateLevel(McMMOPlayer mcMMOPlayer);
+    int calculateLevel(PlayerProfile mcMMOProfile);
 }

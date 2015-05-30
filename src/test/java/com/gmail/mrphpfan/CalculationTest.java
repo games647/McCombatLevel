@@ -3,7 +3,7 @@ package com.gmail.mrphpfan;
 import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.nossr50.config.Config;
-import com.gmail.nossr50.datatypes.player.McMMOPlayer;
+import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 import com.google.common.base.Charsets;
 
@@ -52,8 +52,8 @@ public class CalculationTest {
     public void testScript() {
         LevelCalculator levelCalculator = new JavaScriptCalculator(formula);
 
-        McMMOPlayer mcMMOPlayer = PowerMockito.mock(McMMOPlayer.class);
-        PowerMockito.when(mcMMOPlayer.getSkillLevel(Matchers.any(SkillType.class))).thenReturn(100);
-        System.out.println(levelCalculator.calculateLevel(mcMMOPlayer));
+        PlayerProfile playerProfile = PowerMockito.mock(PlayerProfile.class);
+        PowerMockito.when(playerProfile.getSkillLevel(Matchers.any(SkillType.class))).thenReturn(100);
+        System.out.println(levelCalculator.calculateLevel(playerProfile));
     }
 }
