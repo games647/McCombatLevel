@@ -7,6 +7,7 @@ import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
+import java.text.MessageFormat;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ public class McCombatLevel extends JavaPlugin {
     private String displayName = ChatColor.GREEN + "Combat";
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
+    private String levelUpMessage = "You leveled up to a new combat level of: {}";
 
     public boolean isTagEnabled() {
         return enableTag;
@@ -125,6 +127,11 @@ public class McCombatLevel extends JavaPlugin {
         getServer().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
+            if (!levelUpMessage.isEmpty()) {
+                String formatMessage = MessageFormat.format(levelUpMessage, event.getOldLevel(), event.getNewLevel());
+                player.sendMessage(formatMessage);
+            }
+
             //map the player's name to the level
             playerLevels.put(playerName, event.getNewLevel());
 
@@ -200,6 +207,7 @@ public class McCombatLevel extends JavaPlugin {
         //read in values
         enablePrefix = config.getBoolean("enable_prefix");
         enableTag = config.getBoolean("enable_tag_level");
+        levelUpMessage = ChatColor.translateAlternateColorCodes('&', config.getString("levelUpMessage"));
         displayName = ChatColor.translateAlternateColorCodes('&', config.getString("tag_name"));
         prefixBracket = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());

@@ -13,6 +13,10 @@ prefix_bracket_color: GOLD
 # DARK_GREEN by default, change the color of the level in the prefix
 prefix_level_color: DARK_GREEN
 
+# This message will be sent if the combat level change. You can use {0} for the old level and {1} for the new level
+# If this is empty no message will be sent.
+levelUpMessage: ''
+
 # Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45) by default
 # How the combat is calculated
 formula: 'Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45)'
