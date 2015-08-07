@@ -23,7 +23,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerJoinEvent(PlayerJoinEvent joinEvent) {
+    public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         final Player player = joinEvent.getPlayer();
 
         Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 5 * 20L);
@@ -48,7 +48,7 @@ public class PlayerListener implements Listener {
 
     //some chat plugins listen and change stuff on the default priority. In order
     //to see these changes we need an higher priority.
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChat(AsyncPlayerChatEvent chatEvent) {
         if (!plugin.isPrefixEnabled()) {
             //check if prefix is enabled

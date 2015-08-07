@@ -14,63 +14,63 @@ import org.bukkit.event.player.PlayerEvent;
  */
 public class PlayerCombatLevelChangeEvent extends PlayerEvent implements Cancellable {
 
-	private final static HandlerList handlers = new HandlerList();
+    private final static HandlerList handlers = new HandlerList();
 
-	private final int oldLevel;
-	private int newLevel;
+    private final int oldLevel;
+    private int newLevel;
 
-	private boolean cancel;
+    private boolean cancel;
 
-	public PlayerCombatLevelChangeEvent(Player player, int oldLevel, int newLevel) {
-		super(player);
+    public PlayerCombatLevelChangeEvent(Player player, int oldLevel, int newLevel) {
+        super(player);
 
-		this.oldLevel = oldLevel;
-		this.newLevel = newLevel;
-	}
+        this.oldLevel = oldLevel;
+        this.newLevel = newLevel;
+    }
 
-	/**
-	 * Returns the level the player had previously.
-	 *
-	 * @return the previous level or <code>-1</code> if the player was not loaded before.
-	 */
-	public int getOldLevel() {
-		return oldLevel;
-	}
+    /**
+     * Returns the level the player had previously.
+     *
+     * @return the previous level or <code>-1</code> if the player was not loaded before.
+     */
+    public int getOldLevel() {
+        return oldLevel;
+    }
 
-	/**
-	 * Returns the new level of the player
-	 *
-	 * @return the new level of the player
-	 */
-	public int getNewLevel() {
-		return newLevel;
-	}
+    /**
+     * Returns the new level of the player
+     *
+     * @return the new level of the player
+     */
+    public int getNewLevel() {
+        return newLevel;
+    }
 
-	/**
-	 * Changes the new level of the player
-	 *
-	 * @param newLevel the new level of the player
-	 */
-	public void setNewLevel(int newLevel) {
-		this.newLevel = newLevel;
-	}
+    /**
+     * Changes the new level of the player
+     *
+     * @param newLevel the new level of the player
+     */
+    public void setNewLevel(int newLevel) {
+        this.newLevel = newLevel;
+    }
 
-	@Override
-	public boolean isCancelled() {
-		return cancel;
-	}
+    @Override
+    public boolean isCancelled() {
+        return cancel;
+    }
 
-	@Override
-	public void setCancelled(boolean cancel) {
-		this.cancel = cancel;
-	}
+    @Override
+    public void setCancelled(boolean cancel) {
+        this.cancel = cancel;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 }

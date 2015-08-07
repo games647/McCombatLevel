@@ -85,6 +85,9 @@ public class McCombatLevel extends JavaPlugin {
 
         //register listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        if (getServer().getPluginManager().isPluginEnabled("Herochat")) {
+            getServer().getPluginManager().registerEvents(new HeroChatListener(this), this);
+        }
 
         //register citizens/npc integration
         if (getServer().getPluginManager().isPluginEnabled("Citizens")
