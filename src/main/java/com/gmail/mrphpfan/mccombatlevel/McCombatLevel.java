@@ -36,7 +36,7 @@ public class McCombatLevel extends JavaPlugin {
     private String displayName = ChatColor.GREEN + "Combat";
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
-    private String levelUpMessage = "You leveled up to a new combat level of: {}";
+    private String levelUpMessage = "You leveled up to a new combat level of: {1}";
 
     public boolean isTagEnabled() {
         return enableTag;
@@ -86,6 +86,7 @@ public class McCombatLevel extends JavaPlugin {
         //register listener
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         if (getServer().getPluginManager().isPluginEnabled("Herochat")) {
+            //support with herochat wouldn't work otherwise
             getServer().getPluginManager().registerEvents(new HeroChatListener(this), this);
         }
 
@@ -121,8 +122,8 @@ public class McCombatLevel extends JavaPlugin {
         // get old level or -1 if player was not loaded
         int oldLevel = playerLevels.containsKey(playerName) ? playerLevels.get(playerName) : -1;
         if (oldLevel == level) {
-        	// do nothing if old level == new level
-        	return;
+            // do nothing if old level == new level
+            return;
         }
 
         // create and call event
@@ -138,7 +139,8 @@ public class McCombatLevel extends JavaPlugin {
             //map the player's name to the level
             playerLevels.put(playerName, event.getNewLevel());
 
-            if (effects != null && player.hasPermission(getName().toLowerCase() + ".effect")) {
+            //play effects only if there is change
+            if (oldLevel != -1 && effects != null && player.hasPermission(getName().toLowerCase() + ".effect")) {
                 effects.playEffect(player);
             }
 

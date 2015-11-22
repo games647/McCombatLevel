@@ -17,7 +17,7 @@ public class HeroChatListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerJoin(ChannelChatEvent chatEvent) {
+    public void onPlayerChat(ChannelChatEvent chatEvent) {
         if (!plugin.isPrefixEnabled()) {
             //check if prefix is enabled
             return;
