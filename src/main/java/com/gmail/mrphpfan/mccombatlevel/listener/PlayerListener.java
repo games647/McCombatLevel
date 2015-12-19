@@ -1,5 +1,7 @@
-package com.gmail.mrphpfan.mccombatlevel;
+package com.gmail.mrphpfan.mccombatlevel.listener;
 
+import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
+import com.gmail.mrphpfan.mccombatlevel.ProfileWaitingTask;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 import org.bukkit.Bukkit;
@@ -29,7 +31,7 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 5 * 20L);
 
         //send them the scoreboard
-        if (plugin.isTagEnabled()) {
+        if (plugin.getScoreboardManger() != null) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }

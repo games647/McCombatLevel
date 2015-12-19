@@ -9,12 +9,12 @@
     <name>McCombatLevel</name>
     <inceptionYear>2014</inceptionYear>
     <description>Displays a combat level above users heads and in chat based on their mcMMO stats that affect combat</description>
-    <version>1.8.1</version>
+    <version>1.9</version>
     <url>http://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <powermock.version>1.6.2</powermock.version>
+        <powermock.version>1.6.4</powermock.version>
     </properties>
 
     <issueManagement>
@@ -37,7 +37,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <configuration>
                     <!--So many people still use Java 6 ;( http://mcstats.org/global/#Java+Version-->
                     <source>1.6</source>
@@ -164,7 +164,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>animal-sniffer-maven-plugin</artifactId>
-                        <version>1.13</version>
+                        <version>1.14</version>
                         <configuration>
                             <signature>
                                 <groupId>org.codehaus.mojo.signature</groupId>

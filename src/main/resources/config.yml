@@ -21,6 +21,10 @@ levelUpMessage: ''
 # How the combat is calculated
 formula: 'Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45)'
 
+# The message that will be brodcasted to all other players if the player level ups
+# If you don't use this feature set this to a empty value
+broadcastMessage: ''
+
 # level up effects
 effect:
     lightning: false

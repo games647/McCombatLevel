@@ -1,13 +1,15 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
+import com.gmail.mrphpfan.mccombatlevel.listener.PlayerListener;
+import com.gmail.mrphpfan.mccombatlevel.listener.HeroChatListener;
 import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.DefaultCalculator;
+import com.gmail.mrphpfan.mccombatlevel.listener.SelfListener;
 import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
-import java.text.MessageFormat;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,10 +39,7 @@ public class McCombatLevel extends JavaPlugin {
     private ChatColor prefixBracket = ChatColor.GOLD;
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
     private String levelUpMessage = "You leveled up to a new combat level of: {1}";
-
-    public boolean isTagEnabled() {
-        return enableTag;
-    }
+    private String broadcastMessage = "";
 
     public boolean isPrefixEnabled() {
         return enablePrefix;
@@ -60,6 +59,22 @@ public class McCombatLevel extends JavaPlugin {
 
     public PlayerScoreboards getScoreboardManger() {
         return scoreboardManger;
+    }
+
+    public Effects getEffects() {
+        return effects;
+    }
+
+    public String getLevelUpMessage() {
+        return levelUpMessage;
+    }
+
+    public String getBroadcastMessage() {
+        return broadcastMessage;
+    }
+
+    public Map<String, Integer> getPlayerLevels() {
+        return playerLevels;
     }
 
     @Override
@@ -84,6 +99,7 @@ public class McCombatLevel extends JavaPlugin {
         getCommand("combatlevel").setExecutor(new LevelCommand(this));
 
         //register listener
+        getServer().getPluginManager().registerEvents(new SelfListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         if (getServer().getPluginManager().isPluginEnabled("Herochat")) {
             //support with herochat wouldn't work otherwise
@@ -91,8 +107,7 @@ public class McCombatLevel extends JavaPlugin {
         }
 
         //register citizens/npc integration
-        if (getServer().getPluginManager().isPluginEnabled("Citizens")
-                && getConfig().getBoolean("npc.enabled")) {
+        if (getServer().getPluginManager().isPluginEnabled("Citizens") && getConfig().getBoolean("npc.enabled")) {
             npcListener = new NPCListener(this, getConfig().getConfigurationSection("npc"));
             getServer().getPluginManager().registerEvents(npcListener, this);
         }
@@ -129,34 +144,13 @@ public class McCombatLevel extends JavaPlugin {
         // create and call event
         PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
         getServer().getPluginManager().callEvent(event);
-
-        if (!event.isCancelled()) {
-            if (!levelUpMessage.isEmpty()) {
-                String formatMessage = MessageFormat.format(levelUpMessage, event.getOldLevel(), event.getNewLevel());
-                player.sendMessage(formatMessage);
-            }
-
-            //map the player's name to the level
-            playerLevels.put(playerName, event.getNewLevel());
-
-            //play effects only if there is change
-            if (oldLevel != -1 && effects != null && player.hasPermission(getName().toLowerCase() + ".effect")) {
-                effects.playEffect(player);
-            }
-
-            if (enableTag && scoreboardManger != null
-                    && player.hasPermission(getName().toLowerCase() + ".showLevelTag")) {
-                scoreboardManger.setScore(playerName, level);
-            }
-        }
     }
 
     public void removeCachedLevels(Player player) {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        if (enableTag && scoreboardManger != null
-                && (npcListener == null || npcListener.existsNPC(playerName))) {
+        if (scoreboardManger != null && (npcListener == null || npcListener.existsNPC(playerName))) {
             scoreboardManger.remove(playerName);
         }
     }
@@ -193,27 +187,13 @@ public class McCombatLevel extends JavaPlugin {
         saveDefaultConfig();
 
         Configuration config = getConfig();
-        boolean changed = false;
-
-        //if a key doesn't exist add it to the config not just as default value
-        for (Map.Entry<String, Object> values : config.getDefaults().getValues(true).entrySet()) {
-            String key = values.getKey();
-            if (!config.isSet(key)) {
-                config.set(key, values.getValue());
-                changed = true;
-            }
-        }
-
-        if (changed) {
-            //update the config if something changed
-            saveConfig();
-        }
 
         //read in values
         enablePrefix = config.getBoolean("enable_prefix");
         enableTag = config.getBoolean("enable_tag_level");
         levelUpMessage = ChatColor.translateAlternateColorCodes('&', config.getString("levelUpMessage"));
         displayName = ChatColor.translateAlternateColorCodes('&', config.getString("tag_name"));
+        broadcastMessage = ChatColor.translateAlternateColorCodes('&', config.getString("broadcastMessage"));
         prefixBracket = ChatColor.valueOf(config.getString("prefix_bracket_color").toUpperCase());
         prefixLevel = ChatColor.valueOf(config.getString("prefix_level_color").toUpperCase());
 
@@ -224,8 +204,7 @@ public class McCombatLevel extends JavaPlugin {
         if (scriptCalculator.isScriptEnabled()) {
             levelCalculator = scriptCalculator;
         } else {
-            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please update to Java 8"
-                    + " https://www.java.com/download/");
+            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please update to Java 8");
             levelCalculator = new DefaultCalculator();
         }
     }

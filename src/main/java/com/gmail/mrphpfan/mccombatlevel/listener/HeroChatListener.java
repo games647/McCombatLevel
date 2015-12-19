@@ -1,6 +1,7 @@
-package com.gmail.mrphpfan.mccombatlevel;
+package com.gmail.mrphpfan.mccombatlevel.listener;
 
 import com.dthielke.herochat.ChannelChatEvent;
+import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
