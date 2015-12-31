@@ -46,12 +46,14 @@ public class SelfListener implements Listener {
 
         //play effects only if there is change
         Effects effects = plugin.getEffects();
-        if (oldLevel != -1 && effects != null && player.hasPermission(playerName.toLowerCase() + ".effect")) {
+        if (oldLevel != -1 && effects != null
+                && player.hasPermission(plugin.getName().toLowerCase().toLowerCase() + ".effect")) {
             effects.playEffect(player);
         }
 
         PlayerScoreboards scoreboardManger = plugin.getScoreboardManger();
-        if (scoreboardManger != null && player.hasPermission(playerName.toLowerCase() + ".showLevelTag")) {
+        if (scoreboardManger != null
+                && player.hasPermission(plugin.getName().toLowerCase().toLowerCase() + ".showLevelTag")) {
             scoreboardManger.setScore(playerName, newLevel);
         }
     }
