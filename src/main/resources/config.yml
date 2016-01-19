@@ -28,6 +28,9 @@ broadcastMessage: ''
 # level up effects
 effect:
     lightning: false
+    # List of all available particle effects
+    # https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse/Bukkit-Patches/0006-Add-Particle-API.patch
+    effect: ''
     sound:
         # set this empty in order to disable it
         type: ''

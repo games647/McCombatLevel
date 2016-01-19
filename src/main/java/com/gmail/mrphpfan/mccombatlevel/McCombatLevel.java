@@ -10,9 +10,13 @@ import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Collection;
 
 import java.util.Map;
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
@@ -86,13 +90,25 @@ public class McCombatLevel extends JavaPlugin {
             Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
             scoreboardManger = new PlayerScoreboards(mainScoreboard, displayName);
 
-            //check if there are any players on yet and set their levels
-            for (Player online : getServer().getOnlinePlayers()) {
-                updateLevel(online);
-            }
+            try {
+                //check if there are any players on yet and set their levels
+                Object onlinePlayersResult = Bukkit.class.getDeclaredMethod("getOnlinePlayers").invoke(null);
+                Collection<? extends Player> onlinePlayers;
+                if (onlinePlayersResult instanceof Collection<?>) {
+                    onlinePlayers = getServer().getOnlinePlayers();
+                } else {
+                    onlinePlayers = Arrays.asList((Player[]) onlinePlayersResult);
+                }
 
-            //send the scoreboard initially to online players
-            scoreboardManger.sendAllScoreboard();
+                for (Player online : onlinePlayers) {
+                    updateLevel(online);
+
+                    //send the scoreboard initially to online players
+                    online.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+                }
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                getLogger().log(Level.SEVERE, null, ex);
+            }
         }
 
         //register commands

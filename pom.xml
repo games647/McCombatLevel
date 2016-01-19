@@ -9,7 +9,7 @@
     <name>McCombatLevel</name>
     <inceptionYear>2014</inceptionYear>
     <description>Displays a combat level above users heads and in chat based on their mcMMO stats that affect combat</description>
-    <version>1.9</version>
+    <version>2.0</version>
     <url>http://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
 
     <properties>
@@ -39,9 +39,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <!--So many people still use Java 6 ;( http://mcstats.org/global/#Java+Version-->
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <!--So many people still use Java 7 ;( http://mcstats.org/global/#Java+Version-->
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                     <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
@@ -68,6 +68,12 @@
     </build>
 
     <repositories>
+        <!--HeroChat-->
+        <repository>
+            <id>heroes-repo</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </repository>
+
         <!--Bukkit API-->
         <repository>
             <id>md_5-releases</id>
@@ -85,21 +91,13 @@
             <id>citizens-repo</id>
             <url>http://repo.citizensnpcs.co/</url>
         </repository>
-
-        <!--HeroChat-->
-        <repository>
-            <id>heroes-repo</id>
-            <url>http://maven.elmakers.com/repository/</url>
-        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <!--Compile with a low version, because the new getOnlinePlayers() won't be backwards compatibility.-->
-            <!--while the older version of that method still exists-->
-            <version>1.7.9-R0.2</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -151,39 +149,4 @@
             <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
         </license>
     </licenses>
-
-    <profiles>
-        <profile>
-            <activation>
-                <!--Only run on JDK higher than 1.6-->
-                <jdk>[1.7,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <!--Check if this project is really Java 6 compatible-->
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>animal-sniffer-maven-plugin</artifactId>
-                        <version>1.14</version>
-                        <configuration>
-                            <signature>
-                                <groupId>org.codehaus.mojo.signature</groupId>
-                                <artifactId>java16</artifactId>
-                                <version>1.0</version>
-                            </signature>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>animal-sniffer</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
