@@ -1,7 +1,5 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -46,15 +44,8 @@ public class PlayerScoreboards {
         }
     }
 
-    public void sendAllScoreboard() {
-        for (Player online : Bukkit.getOnlinePlayers()) {
-            //in order to see the level under the name
-            online.setScoreboard(board);
-        }
-    }
-
     public void removeObjective() {
-        //remove the existed objective if the reference changed
+        //remove our objective, so it won't display if the plugin is deactivated
         if (board != null) {
             Objective toRemove = board.getObjective(OBJECTIVE_NAME);
             if (toRemove != null) {

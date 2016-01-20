@@ -1,5 +1,6 @@
-package com.gmail.mrphpfan.mccombatlevel;
+package com.gmail.mrphpfan.mccombatlevel.tasks;
 
+import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.util.player.UserManager;
 
 import java.lang.ref.WeakReference;

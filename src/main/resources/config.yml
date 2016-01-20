@@ -25,6 +25,9 @@ formula: 'Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25
 # If you don't use this feature set this to a empty value
 broadcastMessage: ''
 
+# Should the plugin track player combat levels in sorted ranking list
+ranking: false
+
 # level up effects
 effect:
     lightning: false

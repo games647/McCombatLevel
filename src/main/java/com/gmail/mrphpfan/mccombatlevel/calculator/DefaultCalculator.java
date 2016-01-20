@@ -19,8 +19,7 @@ public class DefaultCalculator implements LevelCalculator {
         int taming = getLevel(mcMMOProfile, SkillType.TAMING);
         int acrobatics = getLevel(mcMMOProfile, SkillType.ACROBATICS);
 
-        return NumberConversions.round((unarmed + swords + axes + archery
-                    + .25 * acrobatics + .25 * taming) / 45);
+        return NumberConversions.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45);
     }
 
     private int getLevel(PlayerProfile mcMMOProfile, SkillType skillType) {

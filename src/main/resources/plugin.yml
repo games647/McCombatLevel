@@ -20,27 +20,37 @@ commands:
   ${project.artifactId}:
     description: 'See the combat level'
     usage: /<command> [player]
+    permissions: ${project.artifactId}.levelcommand
     aliases: [level, combatlevel]
+  ranking:
+    description: 'Lists top combat levels'
+    permission: ${project.artifactId}.rankingcommand
+    usage: /<command> [player]
+    aliases: [toplevel, top]
 
 permissions:
     ${project.artifactId}.*:
         description: 'Gives all permissions for mccombatlevel'
         default: true
         children:
-            mccombatlevel.levelcommand.*: true
-            mccombatlevel.showLevelTag: true
+            ${project.artifactId}.levelcommand.*: true
+            ${project.artifactId}.showLevelTag: true
+            ${project.artifactId}.rankingcommand: true
 
     ${project.artifactId}.levelcommand.*:
         description: 'Same as mccombatlevel.levelcommand'
         children:
             ${project.artifactId}.levelcommand.others: true
-            ${project.artifactId}.levelcommand.self: true
+            ${project.artifactId}.levelcommand: true
 
     ${project.artifactId}.levelcommand.others:
         description: 'Show other combat levels'
 
-    ${project.artifactId}.levelcommand.self:
+    ${project.artifactId}.levelcommand:
         description: 'Show the own level'
+
+    ${project.artifactId}.rankingcommand:
+        description: 'Lists the player ranking'
 
     ${project.artifactId}.showLevelTag:
         description: 'Show the combat level under the name'

@@ -56,5 +56,10 @@ public class SelfListener implements Listener {
                 && player.hasPermission(plugin.getName().toLowerCase().toLowerCase() + ".showLevelTag")) {
             scoreboardManger.setScore(playerName, newLevel);
         }
+
+        if (plugin.getLeaderboardUpdateTask() != null) {
+            //ranking is enabled
+            plugin.getLeaderboardUpdateTask().addToSave(player, newLevel);
+        }
     }
 }

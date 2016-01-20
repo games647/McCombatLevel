@@ -1,8 +1,8 @@
 package com.gmail.mrphpfan.mccombatlevel.npc;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
-import net.citizensnpcs.api.CitizensAPI;
 
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.event.NPCDespawnEvent;
 import net.citizensnpcs.api.event.NPCSpawnEvent;
