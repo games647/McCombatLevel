@@ -97,7 +97,7 @@ public class McCombatLevel extends JavaPlugin {
 
             try {
                 //check if there are any players on yet and set their levels
-                Object onlinePlayersResult = getServer().getClass().getDeclaredMethod("getOnlinePlayers").invoke(null);
+                Object onlinePlayersResult = getServer().getClass().getDeclaredMethod("getOnlinePlayers").invoke(getServer());
                 Collection<? extends Player> onlinePlayers;
                 if (onlinePlayersResult instanceof Collection<?>) {
                     onlinePlayers = getServer().getOnlinePlayers();
