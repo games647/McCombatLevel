@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.NumberConversions;
 
 public class LeaderboardReadTask implements Runnable {
 
@@ -68,7 +69,7 @@ public class LeaderboardReadTask implements Runnable {
                 plugin.getLeaderboardUpdateTask().getReadWriteLock().readLock().unlock();
             }
 
-            int maxPages = Math.floorDiv(position, 10);
+            int maxPages = NumberConversions.floor((double) position / 10);
             display(results, maxPages);
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Error loading leaderboard", ex);
