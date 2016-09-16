@@ -14,7 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <powermock.version>1.6.4</powermock.version>
+        <powermock.version>1.6.5</powermock.version>
     </properties>
 
     <issueManagement>
@@ -37,15 +37,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <!--So many people still use Java 7 ;( http://mcstats.org/global/#Java+Version-->
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
-                    <!--false means actual true http://jira.codehaus.org/browse/MCOMPILER-209-->
-                    <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
         </plugins>
@@ -97,7 +94,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.9-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

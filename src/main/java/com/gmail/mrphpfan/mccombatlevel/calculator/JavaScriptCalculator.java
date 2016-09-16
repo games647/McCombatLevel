@@ -2,6 +2,9 @@ package com.gmail.mrphpfan.mccombatlevel.calculator;
 
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -20,10 +23,10 @@ public class JavaScriptCalculator implements LevelCalculator {
     @Override
     public int calculateLevel(PlayerProfile mcMMOProfile) {
         Bindings variables = scriptEngine.createBindings();
-        for (SkillType skillType : SkillType.values()) {
-            //create variables for scripting
-            variables.put(skillType.toString().toLowerCase(), mcMMOProfile.getSkillLevel(skillType));
-        }
+
+        Map<String, Integer> collect = Stream.of(SkillType.values())
+                .collect(Collectors.toMap((skill) -> skill.getName().toLowerCase(), mcMMOProfile::getSkillLevel));
+        variables.putAll(collect);
 
         try {
             Object result = scriptEngine.eval(formula, variables);

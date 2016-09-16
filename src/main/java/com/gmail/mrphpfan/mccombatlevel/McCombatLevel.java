@@ -97,7 +97,8 @@ public class McCombatLevel extends JavaPlugin {
 
             try {
                 //check if there are any players on yet and set their levels
-                Object onlinePlayersResult = getServer().getClass().getDeclaredMethod("getOnlinePlayers").invoke(getServer());
+                Object onlinePlayersResult = getServer().getClass().getDeclaredMethod("getOnlinePlayers")
+                        .invoke(getServer());
                 Collection<? extends Player> onlinePlayers;
                 if (onlinePlayersResult instanceof Collection<?>) {
                     onlinePlayers = getServer().getOnlinePlayers();
@@ -160,7 +161,7 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     public void setLevel(Player player, int level) {
-        final String playerName = player.getName();
+        String playerName = player.getName();
 
         // get old level or -1 if player was not loaded
         int oldLevel = playerLevels.containsKey(playerName) ? playerLevels.get(playerName) : -1;

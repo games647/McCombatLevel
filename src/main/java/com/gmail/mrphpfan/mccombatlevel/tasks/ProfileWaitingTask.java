@@ -20,7 +20,7 @@ public class ProfileWaitingTask implements Runnable {
     public ProfileWaitingTask(McCombatLevel plugin, Player player) {
         this.plugin = plugin;
 
-        this.weakPlayer = new WeakReference<Player>(player);
+        this.weakPlayer = new WeakReference<>(player);
     }
 
     @Override
