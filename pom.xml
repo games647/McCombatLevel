@@ -70,6 +70,11 @@
             <id>heroes-repo</id>
             <url>http://maven.elmakers.com/repository/</url>
         </repository>
+        
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
 
         <!--Bukkit API-->
         <repository>
