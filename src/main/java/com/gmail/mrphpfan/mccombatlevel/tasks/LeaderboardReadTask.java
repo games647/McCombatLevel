@@ -2,16 +2,13 @@ package com.gmail.mrphpfan.mccombatlevel.tasks;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.NumberConversions;
@@ -30,8 +27,8 @@ public class LeaderboardReadTask implements Runnable {
 
     @Override
     public void run() {
-        File file = new File(plugin.getDataFolder(), "leaderboardIndex.txt");
-        if (file.exists()) {
+        Path file = plugin.getDataFolder().toPath().resolve("leaderboardIndex.txt");
+        if (Files.exists(file)) {
             int startIndex = (requestedPage - 1) * 10 + 1;
 
             readLeaderboard(file, startIndex, startIndex + 10);
@@ -40,7 +37,7 @@ public class LeaderboardReadTask implements Runnable {
         }
     }
 
-    private void readLeaderboard(File leaderboardFile, int startPos, int endPos) {
+    private void readLeaderboard(Path leaderboardFile, int startPos, int endPos) {
         BufferedReader reader = null;
         try {
             List<PlayerStat> results = Lists.newArrayListWithExpectedSize(startPos - endPos);
@@ -48,7 +45,7 @@ public class LeaderboardReadTask implements Runnable {
 
             try {
                 plugin.getLeaderboardUpdateTask().getReadWriteLock().readLock().lock();
-                reader = Files.newReader(leaderboardFile, Charsets.UTF_8);
+                reader = Files.newBufferedReader(leaderboardFile);
 
                 String line = reader.readLine();
                 while (line != null && !line.isEmpty()) {

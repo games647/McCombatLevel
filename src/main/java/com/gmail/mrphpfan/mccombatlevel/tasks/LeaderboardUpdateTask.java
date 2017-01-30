@@ -2,15 +2,15 @@ package com.gmail.mrphpfan.mccombatlevel.tasks;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
@@ -52,25 +52,24 @@ public class LeaderboardUpdateTask implements Runnable {
         BufferedWriter writer = null;
         BufferedReader reader = null;
         try {
-            File tempFile = File.createTempFile("temp_", "", plugin.getDataFolder());
-            File originalFile = new File(plugin.getDataFolder(), "leaderboardIndex.txt");
-            if (!originalFile.exists()) {
-                originalFile.createNewFile();
+            Path tempFile = Files.createTempDirectory(plugin.getDataFolder().toPath(), "leaderboard-temp");
+            Path originalFile = new File(plugin.getDataFolder(), "leaderboardIndex.txt").toPath();
+            if (Files.notExists(originalFile)) {
+                Files.createFile(originalFile);
             }
 
-            reader = Files.newReader(originalFile, Charsets.UTF_8);
-            writer = Files.newWriter(tempFile, Charsets.UTF_8);
+            reader = Files.newBufferedReader(originalFile);
+            writer = Files.newBufferedWriter(tempFile);
 
             updateExistingEntries(reader, writer);
             appendNewEntries(writer);
 
             toSave.clear();
-
             try {
                 readWriteLock.writeLock().lock();
 
-                originalFile.delete();
-                tempFile.renameTo(originalFile);
+                Files.delete(originalFile);
+                Files.move(tempFile, originalFile);
             } finally {
                 readWriteLock.writeLock().unlock();
             }
