@@ -1,7 +1,6 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
 import java.util.Locale;
-import org.bukkit.Bukkit;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -10,8 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 public class Effects {
-
-    private static final boolean SPIGOT_SERVER = Bukkit.getVersion().contains("Spigot");
 
     public static Effects create(ConfigurationSection configSection) {
         boolean lightning = configSection.getBoolean("lightning");
@@ -69,8 +66,8 @@ public class Effects {
             player.playSound(location, sound, volume, pitch);
         }
 
-        if (particleEffect != null && SPIGOT_SERVER) {
-            player.spigot().playEffect(location, particleEffect, 0, 0, 5, 5, 5, 2, 25, 5);
+        if (particleEffect != null) {
+            player.playEffect(location, particleEffect, particleEffect.getData());
         }
     }
 }
