@@ -4,7 +4,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
-public class PlayerScoreboards {
+public class CombatScoreboard {
 
     //should be unique
     private static final String OBJECTIVE_NAME = "combat_level";
@@ -12,12 +12,8 @@ public class PlayerScoreboards {
     private final Scoreboard board;
     private final Objective objective;
 
-    private final boolean oldScoreboardAPI;
-
-    public PlayerScoreboards(Scoreboard board, String displayName) {
+    public CombatScoreboard(Scoreboard board, String displayName) {
         this.board = board;
-
-        oldScoreboardAPI = isOldScoreboardAPI();
 
         //as we use the main scoreboard now we have to clear old values to prevent memory leaks
         removeObjective();
@@ -28,20 +24,11 @@ public class PlayerScoreboards {
     }
 
     public void setScore(String playerName, int score) {
-        //set the score on the scoreboard
-        if (oldScoreboardAPI) {
-            objective.getScore(new FastOfflinePlayer(playerName)).setScore(score);
-        } else {
-            objective.getScore(playerName).setScore(score);
-        }
+        objective.getScore(playerName).setScore(score);
     }
 
     public void remove(String playerName) {
-        if (oldScoreboardAPI) {
-            board.resetScores(new FastOfflinePlayer(playerName));
-        } else {
-            board.resetScores(playerName);
-        }
+        board.resetScores(playerName);
     }
 
     public void removeObjective() {
@@ -53,18 +40,5 @@ public class PlayerScoreboards {
                 toRemove.unregister();
             }
         }
-    }
-
-    private boolean isOldScoreboardAPI() {
-        try {
-            Objective.class.getDeclaredMethod("getScore", String.class);
-        } catch (NoSuchMethodException noSuchMethodEx) {
-            //since we have an extra class for it (FastOfflinePlayer)
-            //we can fail silently
-            return true;
-        }
-
-        //We have access to the new method
-        return false;
     }
 }

@@ -2,6 +2,7 @@ package com.gmail.mrphpfan.mccombatlevel.calculator;
 
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
+
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

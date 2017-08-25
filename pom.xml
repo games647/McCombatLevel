@@ -9,12 +9,12 @@
     <name>McCombatLevel</name>
     <inceptionYear>2014</inceptionYear>
     <description>Displays a combat level above users heads and in chat based on their mcMMO stats that affect combat</description>
-    <version>2.0.1</version>
-    <url>http://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
+    <version>2.0.2</version>
+    <url>https://dev.bukkit.org/bukkit-plugins/mccombatlevel/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <powermock.version>1.6.5</powermock.version>
+        <powermock.version>1.7.0</powermock.version>
     </properties>
 
     <issueManagement>
@@ -41,8 +41,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
         </plugins>
@@ -53,24 +51,10 @@
                 <!--Replace variables-->
                 <filtering>true</filtering>
             </resource>
-
-            <!--Add the license to jar in order to see it in the final jar-->
-            <resource>
-                <directory>${basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
-            </resource>
         </resources>
     </build>
 
     <repositories>
-        <!--HeroChat-->
-        <repository>
-            <id>heroes-repo</id>
-            <url>http://maven.elmakers.com/repository/</url>
-        </repository>
-        
         <repository>
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
@@ -84,7 +68,7 @@
         <!--Bukkit API-->
         <repository>
             <id>md_5-releases</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
+            <url>https://repo.md-5.net/content/groups/public/</url>
         </repository>
 
         <!--citizens API-->
@@ -98,7 +82,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.12-pre2-SNAPSHOT</version>
+            <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -117,21 +101,8 @@
         <dependency>
             <groupId>net.citizensnpcs</groupId>
             <artifactId>citizensapi</artifactId>
-            <version>2.0.20-SNAPSHOT</version>
+            <version>2.0.5</version>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dthielke.herochat</groupId>
-            <artifactId>HeroChat</artifactId>
-            <version>5.6.5-SNAPSHOT</version>
-            <optional>true</optional>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.milkbowl.vault</groupId>
-                    <artifactId>Vault</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--Testing environment-->
@@ -149,11 +120,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE - Version 3, 29 June 2007</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
-        </license>
-    </licenses>
 </project>

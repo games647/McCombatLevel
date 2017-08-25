@@ -3,7 +3,7 @@ package com.gmail.mrphpfan.mccombatlevel.listener;
 import com.gmail.mrphpfan.mccombatlevel.Effects;
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.mrphpfan.mccombatlevel.PlayerCombatLevelChangeEvent;
-import com.gmail.mrphpfan.mccombatlevel.PlayerScoreboards;
+import com.gmail.mrphpfan.mccombatlevel.CombatScoreboard;
 
 import java.text.MessageFormat;
 
@@ -51,7 +51,7 @@ public class SelfListener implements Listener {
             effects.playEffect(player);
         }
 
-        PlayerScoreboards scoreboardManger = plugin.getScoreboardManger();
+        CombatScoreboard scoreboardManger = plugin.getScoreboardManger();
         if (scoreboardManger != null
                 && player.hasPermission(plugin.getName().toLowerCase().toLowerCase() + ".showLevelTag")) {
             scoreboardManger.setScore(playerName, newLevel);

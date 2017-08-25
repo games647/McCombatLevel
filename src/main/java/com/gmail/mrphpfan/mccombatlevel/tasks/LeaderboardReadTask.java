@@ -3,12 +3,14 @@ package com.gmail.mrphpfan.mccombatlevel.tasks;
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;
 import com.google.common.collect.Lists;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.NumberConversions;

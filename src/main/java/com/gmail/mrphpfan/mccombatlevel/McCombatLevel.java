@@ -3,7 +3,6 @@ package com.gmail.mrphpfan.mccombatlevel;
 import com.gmail.mrphpfan.mccombatlevel.calculator.DefaultCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
-import com.gmail.mrphpfan.mccombatlevel.listener.HeroChatListener;
 import com.gmail.mrphpfan.mccombatlevel.listener.PlayerListener;
 import com.gmail.mrphpfan.mccombatlevel.listener.SelfListener;
 import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
@@ -31,7 +30,7 @@ public class McCombatLevel extends JavaPlugin {
 
     private LevelCalculator levelCalculator;
 
-    private PlayerScoreboards scoreboardManger;
+    private CombatScoreboard scoreboardManger;
     private Effects effects;
     private NPCListener npcListener;
     private LeaderboardUpdateTask leaderboardUpdateTask;
@@ -62,7 +61,7 @@ public class McCombatLevel extends JavaPlugin {
         levelCalculator = newCalculator;
     }
 
-    public PlayerScoreboards getScoreboardManger() {
+    public CombatScoreboard getScoreboardManger() {
         return scoreboardManger;
     }
 
@@ -93,7 +92,7 @@ public class McCombatLevel extends JavaPlugin {
         if (enableTag) {
             //Choose the main scoreboard in order to be compatible with for example ColoredTags
             Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
-            scoreboardManger = new PlayerScoreboards(mainScoreboard, displayName);
+            scoreboardManger = new CombatScoreboard(mainScoreboard, displayName);
 
             try {
                 //check if there are any players on yet and set their levels
@@ -124,10 +123,6 @@ public class McCombatLevel extends JavaPlugin {
         //register listener
         getServer().getPluginManager().registerEvents(new SelfListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        if (getServer().getPluginManager().isPluginEnabled("Herochat")) {
-            //support with herochat wouldn't work otherwise
-            getServer().getPluginManager().registerEvents(new HeroChatListener(this), this);
-        }
 
         //register citizens/npc integration
         if (getServer().getPluginManager().isPluginEnabled("Citizens") && getConfig().getBoolean("npc.enabled")) {
