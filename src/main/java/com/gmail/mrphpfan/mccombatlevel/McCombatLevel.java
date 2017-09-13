@@ -11,12 +11,10 @@ import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -94,25 +92,12 @@ public class McCombatLevel extends JavaPlugin {
             Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
             scoreboardManger = new CombatScoreboard(mainScoreboard, displayName);
 
-            try {
-                //check if there are any players on yet and set their levels
-                Object onlinePlayersResult = getServer().getClass().getDeclaredMethod("getOnlinePlayers")
-                        .invoke(getServer());
-                Collection<? extends Player> onlinePlayers;
-                if (onlinePlayersResult instanceof Collection<?>) {
-                    onlinePlayers = getServer().getOnlinePlayers();
-                } else {
-                    onlinePlayers = Arrays.asList((Player[]) onlinePlayersResult);
-                }
+            //check if there are any players on yet and set their levels
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                updateLevel(online);
 
-                for (Player online : onlinePlayers) {
-                    updateLevel(online);
-
-                    //send the scoreboard initially to online players
-                    online.setScoreboard(mainScoreboard);
-                }
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                getLogger().log(Level.SEVERE, null, ex);
+                //send the scoreboard initially to online players
+                online.setScoreboard(mainScoreboard);
             }
         }
 
