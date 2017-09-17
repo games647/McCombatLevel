@@ -4,6 +4,8 @@ import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.mrphpfan.mccombatlevel.tasks.ProfileWaitingTask;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
+import java.util.OptionalInt;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -57,12 +59,12 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Integer combatLevel = plugin.getCombatLevel(chatEvent.getPlayer());
+        OptionalInt combatLevel = plugin.getCombatLevel(chatEvent.getPlayer());
         String format = chatEvent.getFormat();
         if (format.contains(CHAT_VARIABLE)) {
             String level = "";
-            if (combatLevel != null) {
-                level = combatLevel.toString();
+            if (combatLevel.isPresent()) {
+                level = Integer.toString(combatLevel.getAsInt());
             }
 
             chatEvent.setFormat(format.replace(CHAT_VARIABLE, level));
@@ -71,10 +73,10 @@ public class PlayerListener implements Listener {
         }
 
         //append a level prefix to their name
-        if (combatLevel != null) {
+        if (combatLevel.isPresent()) {
             ChatColor prefixColor = plugin.getPrefixColor();
             ChatColor prefixBracket = plugin.getPrefixBracket();
-            chatEvent.setFormat(prefixBracket + "[" + prefixColor + combatLevel + prefixBracket + "]"
+            chatEvent.setFormat(prefixBracket + "[" + prefixColor + combatLevel.getAsInt() + prefixBracket + "]"
                     + ChatColor.RESET + chatEvent.getFormat());
         }
     }

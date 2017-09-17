@@ -4,20 +4,24 @@
 /.settings
 
 # netbeans
-/nbproject
+*/nbproject
 nb-configuration.xml
 
 # maven
-/target
+*/target
 
 # vim
 .*.sw[a-p]
 
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
 # various other potential build files
-/build
+*/build/
 /bin
 /dist
 /manifest.mf
+*.log
 
 # Mac filesystem dust
 .DS_Store
@@ -27,3 +31,12 @@ nb-configuration.xml
 *.ipr
 *.iws
 .idea/
+
+# Gradle
+.gradle
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar

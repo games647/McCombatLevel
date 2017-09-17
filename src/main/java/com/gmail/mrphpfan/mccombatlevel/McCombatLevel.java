@@ -12,8 +12,10 @@ import com.gmail.nossr50.util.player.UserManager;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.logging.Level;
 
+import be.maximvdw.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -115,6 +117,22 @@ public class McCombatLevel extends JavaPlugin {
             getServer().getPluginManager().registerEvents(npcListener, this);
         }
 
+        if (getServer().getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
+            PlaceholderAPI.registerPlaceholder(this, "combat_level", replaceEvent -> {
+                if (replaceEvent.isOnline()) {
+                    return "Player not online";
+                }
+
+                Player player = replaceEvent.getPlayer();
+                OptionalInt combatLevel = getCombatLevel(player);
+                if (combatLevel.isPresent()) {
+                    return Integer.toString(combatLevel.getAsInt());
+                }
+
+                return "Level not loaded";
+            });
+        }
+
         if (ranking) {
             leaderboardUpdateTask = new LeaderboardUpdateTask(this);
             //10 minutes
@@ -132,19 +150,18 @@ public class McCombatLevel extends JavaPlugin {
         leaderboardUpdateTask = null;
     }
 
-    /**
-     * @param player the player
-     * @return null if the key doesn't exist
-     */
-    public Integer getCombatLevel(Player player) {
-        return playerLevels.get(player.getName());
+    public OptionalInt getCombatLevel(Player player) {
+        Integer level = playerLevels.get(player);
+        if (level == null) {
+            return OptionalInt.empty();
+        }
+
+        return OptionalInt.of(level);
     }
 
     public void setLevel(Player player, int level) {
-        String playerName = player.getName();
-
         // get old level or -1 if player was not loaded
-        int oldLevel = playerLevels.containsKey(playerName) ? playerLevels.get(playerName) : -1;
+        int oldLevel = getCombatLevel(player).orElse(-1);
         if (oldLevel != level) {
             PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
             getServer().getPluginManager().callEvent(event);

@@ -1,5 +1,7 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
+import java.util.OptionalInt;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -35,12 +37,12 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        Integer level = plugin.getCombatLevel(targetPlayer);
-        if (level == null) {
-            sender.sendMessage(ChatColor.RED + "Not loaded yet");
-        } else {
+        OptionalInt level = plugin.getCombatLevel(targetPlayer);
+        if (level.isPresent()) {
             sender.sendMessage(ChatColor.GOLD + targetPlayer.getName() + "'s Combat level: "
-                    + ChatColor.DARK_GREEN + level);
+                    + ChatColor.DARK_GREEN + level.getAsInt());
+        } else {
+            sender.sendMessage(ChatColor.RED + "Not loaded yet");
         }
 
         return true;
@@ -57,11 +59,11 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        Integer level = plugin.getCombatLevel((Player) sender);
-        if (level == null) {
-            sender.sendMessage(ChatColor.RED + "Not loaded yet");
-        } else {
+        OptionalInt level = plugin.getCombatLevel((Player) sender);
+        if (level.isPresent()) {
             sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+        } else {
+            sender.sendMessage(ChatColor.RED + "Not loaded yet");
         }
 
         return true;
