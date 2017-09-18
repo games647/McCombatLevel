@@ -119,7 +119,7 @@ public class McCombatLevel extends JavaPlugin {
 
         if (getServer().getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
             PlaceholderAPI.registerPlaceholder(this, "combat_level", replaceEvent -> {
-                if (replaceEvent.isOnline()) {
+                if (!replaceEvent.isOnline()) {
                     return "Player not online";
                 }
 
