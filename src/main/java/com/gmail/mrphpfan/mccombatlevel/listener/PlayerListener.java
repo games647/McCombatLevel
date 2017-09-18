@@ -30,7 +30,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent joinEvent) {
         final Player player = joinEvent.getPlayer();
 
-        Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 5 * 20L);
+        Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 20L);
 
         //send them the scoreboard
         if (plugin.getScoreboardManger() != null) {

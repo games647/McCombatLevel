@@ -33,8 +33,8 @@ public class ProfileWaitingTask implements Runnable {
             } else {
                 attempt++;
                 if (attempt <= MAX_TRIES) {
-                    //max tries - last try would test after 5 * 5 * 20 => 500 ticks or 25 seconds
-                    Bukkit.getScheduler().runTaskLater(plugin, this, attempt * 5 * 20L);
+                    //max tries - last try would test after
+                    Bukkit.getScheduler().runTaskLater(plugin, this, 20L);
                 }
             }
         }
