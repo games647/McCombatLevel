@@ -55,9 +55,9 @@ npc:
 
 ## Images
 
-![Chat format](http://i.imgur.com/J6M4ncp.png)
-![Playertag format](http://i.imgur.com/tc1ikCH.png)
+![Chat format](https://i.imgur.com/J6M4ncp.png)
+![Playertag format](https://i.imgur.com/tc1ikCH.png)
 
 See:
-* http://dev.bukkit.org/bukkit-plugins/mccombatlevel/
-* http://www.curse.com/bukkit-plugins/minecraft/mccombatlevel
+* https://dev.bukkit.org/bukkit-plugins/mccombatlevel/
+* https://www.curse.com/bukkit-plugins/minecraft/mccombatlevel

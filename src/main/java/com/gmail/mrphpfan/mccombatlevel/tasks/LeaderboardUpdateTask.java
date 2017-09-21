@@ -49,8 +49,6 @@ public class LeaderboardUpdateTask implements Runnable {
             return;
         }
 
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
         try {
             Path tempFile = Files.createTempDirectory(plugin.getDataFolder().toPath(), "leaderboard-temp");
             Path originalFile = new File(plugin.getDataFolder(), "leaderboardIndex.txt").toPath();
@@ -58,15 +56,14 @@ public class LeaderboardUpdateTask implements Runnable {
                 Files.createFile(originalFile);
             }
 
-            reader = Files.newBufferedReader(originalFile);
-            writer = Files.newBufferedWriter(tempFile);
-
-            updateExistingEntries(reader, writer);
-            appendNewEntries(writer);
-
-            toSave.clear();
-            try {
+            try (BufferedReader reader = Files.newBufferedReader(originalFile);
+                 BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
                 readWriteLock.writeLock().lock();
+
+                updateExistingEntries(reader, writer);
+                appendNewEntries(writer);
+
+                toSave.clear();
 
                 Files.delete(originalFile);
                 Files.move(tempFile, originalFile);
@@ -75,23 +72,6 @@ public class LeaderboardUpdateTask implements Runnable {
             }
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Error saving leaderboard", ex);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
-
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
         }
     }
 
