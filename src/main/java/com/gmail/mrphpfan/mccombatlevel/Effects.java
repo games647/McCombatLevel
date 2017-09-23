@@ -1,6 +1,7 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
-import java.util.Locale;
+import com.google.common.base.Enums;
+import com.google.common.base.Optional;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -16,21 +17,19 @@ public class Effects {
         String effectType = configSection.getString("effect");
         Effect particleEffect = null;
         if (!effectType.isEmpty()) {
-            try {
-                particleEffect = Effect.valueOf(effectType.toUpperCase(Locale.ENGLISH));
-            } catch (IllegalArgumentException argumentException) {
-                particleEffect = null;
+            Optional<Effect> optionalEffect = Enums.getIfPresent(Effect.class, effectType.toUpperCase());
+            if (optionalEffect.isPresent()) {
+                particleEffect = optionalEffect.get();
             }
         }
 
         ConfigurationSection soundSection = configSection.getConfigurationSection("sound");
         String soundType = soundSection.getString("type");
 
-        Sound sound;
-        try {
-            sound = Sound.valueOf(soundType.toUpperCase(Locale.ENGLISH));
-        } catch (IllegalArgumentException argumentException) {
-            sound = null;
+        Sound sound = null;
+        Optional<Sound> optionalSound = Enums.getIfPresent(Sound.class, soundType.toUpperCase());
+        if (optionalSound.isPresent()) {
+            sound = optionalSound.get();
         }
 
         float pitch = (float) soundSection.getDouble("pitch");
