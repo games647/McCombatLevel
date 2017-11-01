@@ -59,7 +59,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        OptionalInt combatLevel = plugin.getCombatLevel(chatEvent.getPlayer());
+        OptionalInt combatLevel = plugin.getLevel(chatEvent.getPlayer());
         String format = chatEvent.getFormat();
         if (format.contains(CHAT_VARIABLE)) {
             String level = "";

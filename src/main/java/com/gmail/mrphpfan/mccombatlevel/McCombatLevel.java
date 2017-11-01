@@ -124,7 +124,7 @@ public class McCombatLevel extends JavaPlugin {
                 }
 
                 Player player = replaceEvent.getPlayer();
-                OptionalInt combatLevel = getCombatLevel(player);
+                OptionalInt combatLevel = getLevel(player);
                 if (combatLevel.isPresent()) {
                     return Integer.toString(combatLevel.getAsInt());
                 }
@@ -150,7 +150,7 @@ public class McCombatLevel extends JavaPlugin {
         leaderboardUpdateTask = null;
     }
 
-    public OptionalInt getCombatLevel(Player player) {
+    public OptionalInt getLevel(Player player) {
         Integer level = playerLevels.get(player);
         if (level == null) {
             return OptionalInt.empty();
@@ -159,9 +159,14 @@ public class McCombatLevel extends JavaPlugin {
         return OptionalInt.of(level);
     }
 
+    @Deprecated
+    public int getCombatLevel(Player player) {
+        return getLevel(player).orElse(0);
+    }
+
     public void setLevel(Player player, int level) {
         // get old level or -1 if player was not loaded
-        int oldLevel = getCombatLevel(player).orElse(-1);
+        int oldLevel = playerLevels.getOrDefault(player, -1);
         if (oldLevel != level) {
             PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
             getServer().getPluginManager().callEvent(event);
@@ -172,9 +177,7 @@ public class McCombatLevel extends JavaPlugin {
         final String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
-        if (scoreboardManger != null && (npcListener == null || npcListener.existsNPC(playerName))) {
-            scoreboardManger.remove(playerName);
-        }
+        scoreboardManger.remove(playerName);
     }
 
     public void updateLevel(Player player) {
@@ -224,7 +227,7 @@ public class McCombatLevel extends JavaPlugin {
         if (scriptCalculator.isScriptEnabled()) {
             levelCalculator = scriptCalculator;
         } else {
-            getLogger().warning("JavaScript Engine not found. Ignoring formula. Please update to Java 8");
+            getLogger().warning("JavaScript Engine not found. Ignoring formula...");
             levelCalculator = new DefaultCalculator();
         }
     }

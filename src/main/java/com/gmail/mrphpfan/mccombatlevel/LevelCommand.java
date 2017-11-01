@@ -37,7 +37,7 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        OptionalInt level = plugin.getCombatLevel(targetPlayer);
+        OptionalInt level = plugin.getLevel(targetPlayer);
         if (level.isPresent()) {
             sender.sendMessage(ChatColor.GOLD + targetPlayer.getName() + "'s Combat level: "
                     + ChatColor.DARK_GREEN + level.getAsInt());
@@ -59,7 +59,7 @@ public class LevelCommand implements CommandExecutor {
             return true;
         }
 
-        OptionalInt level = plugin.getCombatLevel((Player) sender);
+        OptionalInt level = plugin.getLevel((Player) sender);
         if (level.isPresent()) {
             sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
         } else {

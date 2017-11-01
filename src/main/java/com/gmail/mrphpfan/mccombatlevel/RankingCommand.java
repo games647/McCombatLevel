@@ -3,6 +3,7 @@ package com.gmail.mrphpfan.mccombatlevel;
 import com.gmail.mrphpfan.mccombatlevel.tasks.LeaderboardReadTask;
 import com.google.common.primitives.Ints;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,6 +40,6 @@ public class RankingCommand implements CommandExecutor {
 
     private void queueReadRequest(CommandSender sender, int page) {
         LeaderboardReadTask leaderboardReadTask = new LeaderboardReadTask(plugin, sender, page);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, leaderboardReadTask);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, leaderboardReadTask);
     }
 }
