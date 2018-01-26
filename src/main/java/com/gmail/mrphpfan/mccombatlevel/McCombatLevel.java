@@ -160,7 +160,7 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     @Deprecated
-    public int getCombatLevel(Player player) {
+    public Integer getCombatLevel(Player player) {
         return getLevel(player).orElse(0);
     }
 
