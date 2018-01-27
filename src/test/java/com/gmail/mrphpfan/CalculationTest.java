@@ -11,15 +11,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Matchers.any;
 
+import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -47,7 +49,7 @@ public class CalculationTest {
    public void skillTypeUse() {
        for (SkillType combatSkill : SkillType.COMBAT_SKILLS) {
            //test if the default formula contains all combat variables
-           Assert.assertTrue(formula.contains(combatSkill.getName().toLowerCase()));
+           assertThat(formula, containsString(combatSkill.getName().toLowerCase()));
        }
    }
 
@@ -57,6 +59,6 @@ public class CalculationTest {
 
        PlayerProfile playerProfile = mock(PlayerProfile.class);
        when(playerProfile.getSkillLevel(any(SkillType.class))).thenReturn(100);
-       Assert.assertEquals(levelCalculator.calculateLevel(playerProfile), 10);
+       assertThat(10, is(levelCalculator.calculateLevel(playerProfile)));
    }
 }
