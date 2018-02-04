@@ -40,14 +40,12 @@ public class LeaderboardReadTask implements Runnable {
     }
 
     private void readLeaderboard(Path leaderboardFile, int startPos, int endPos) {
-        BufferedReader reader = null;
         try {
             List<PlayerStat> results = Lists.newArrayListWithExpectedSize(startPos - endPos);
             int position = 1;
 
-            try {
+            try (BufferedReader reader = Files.newBufferedReader(leaderboardFile)) {
                 plugin.getLeaderboardUpdateTask().getReadWriteLock().readLock().lock();
-                reader = Files.newBufferedReader(leaderboardFile);
 
                 String line = reader.readLine();
                 while (line != null && !line.isEmpty()) {
@@ -73,14 +71,6 @@ public class LeaderboardReadTask implements Runnable {
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Error loading leaderboard", ex);
             sender.sendMessage(ChatColor.DARK_RED + "Error loading leaderboard");
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
         }
     }
 

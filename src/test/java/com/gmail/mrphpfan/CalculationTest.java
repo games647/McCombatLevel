@@ -5,10 +5,10 @@ import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.nossr50.config.Config;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
-import com.google.common.base.Charsets;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class CalculationTest {
        when(fakeConfig.getLocale()).thenReturn("en_US");
 
        InputStream resourceAsStream = getClass().getResourceAsStream("/config.yml");
-       InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, Charsets.UTF_8);
+       InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
        formula = YamlConfiguration.loadConfiguration(inputStreamReader).getString("formula");
    }
 

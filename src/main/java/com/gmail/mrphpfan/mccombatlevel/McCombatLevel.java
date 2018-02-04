@@ -9,10 +9,10 @@ import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
 import com.gmail.mrphpfan.mccombatlevel.tasks.LeaderboardUpdateTask;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
-import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import be.maximvdw.placeholderapi.PlaceholderAPI;
@@ -26,7 +26,7 @@ public class McCombatLevel extends JavaPlugin {
 
     //cached combat levels of online players
     //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
-    private final Map<String, Integer> playerLevels = Maps.newConcurrentMap();
+    private final Map<String, Integer> playerLevels = new ConcurrentHashMap<>();
 
     private LevelCalculator levelCalculator;
 

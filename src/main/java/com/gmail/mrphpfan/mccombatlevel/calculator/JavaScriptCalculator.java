@@ -4,13 +4,14 @@ import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import static java.util.stream.Collectors.toMap;
 
 public class JavaScriptCalculator implements LevelCalculator {
 
@@ -26,7 +27,7 @@ public class JavaScriptCalculator implements LevelCalculator {
         Bindings variables = scriptEngine.createBindings();
 
         Map<String, Integer> collect = Stream.of(SkillType.values())
-                .collect(Collectors.toMap((skill) -> skill.getName().toLowerCase(), mcMMOProfile::getSkillLevel));
+                .collect(toMap(skill -> skill.getName().toLowerCase(), mcMMOProfile::getSkillLevel));
         variables.putAll(collect);
 
         try {

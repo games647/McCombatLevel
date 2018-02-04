@@ -3,7 +3,6 @@ package com.gmail.mrphpfan.mccombatlevel.tasks;
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -24,7 +24,7 @@ public class LeaderboardUpdateTask implements Runnable {
 
     private final McCombatLevel plugin;
 
-    private final ConcurrentMap<UUID, PlayerStat> toSave = Maps.newConcurrentMap();
+    private final ConcurrentMap<UUID, PlayerStat> toSave = new ConcurrentHashMap<>();
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public LeaderboardUpdateTask(McCombatLevel plugin) {
