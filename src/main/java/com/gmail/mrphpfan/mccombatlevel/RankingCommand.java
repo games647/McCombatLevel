@@ -1,6 +1,6 @@
 package com.gmail.mrphpfan.mccombatlevel;
 
-import com.gmail.mrphpfan.mccombatlevel.tasks.LeaderboardReadTask;
+import com.gmail.mrphpfan.mccombatlevel.task.LeaderboardReadTask;
 import com.google.common.primitives.Ints;
 
 import org.bukkit.Bukkit;

@@ -1,4 +1,4 @@
-package com.gmail.mrphpfan.mccombatlevel.tasks;
+package com.gmail.mrphpfan.mccombatlevel.task;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;

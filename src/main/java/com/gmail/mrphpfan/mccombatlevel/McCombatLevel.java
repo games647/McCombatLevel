@@ -6,7 +6,7 @@ import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.mrphpfan.mccombatlevel.listener.PlayerListener;
 import com.gmail.mrphpfan.mccombatlevel.listener.SelfListener;
 import com.gmail.mrphpfan.mccombatlevel.npc.NPCListener;
-import com.gmail.mrphpfan.mccombatlevel.tasks.LeaderboardUpdateTask;
+import com.gmail.mrphpfan.mccombatlevel.task.LeaderboardUpdateTask;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.util.player.UserManager;
 

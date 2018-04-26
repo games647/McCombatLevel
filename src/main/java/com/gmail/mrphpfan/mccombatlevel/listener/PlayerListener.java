@@ -1,7 +1,7 @@
 package com.gmail.mrphpfan.mccombatlevel.listener;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
-import com.gmail.mrphpfan.mccombatlevel.tasks.ProfileWaitingTask;
+import com.gmail.mrphpfan.mccombatlevel.task.ProfileWaitingTask;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
 
 import java.util.OptionalInt;

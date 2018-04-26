@@ -1,4 +1,4 @@
-package com.gmail.mrphpfan.mccombatlevel.tasks;
+package com.gmail.mrphpfan.mccombatlevel.task;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
 import com.gmail.nossr50.datatypes.database.PlayerStat;
@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +67,7 @@ public class LeaderboardUpdateTask implements Runnable {
                 toSave.clear();
 
                 Files.delete(originalFile);
-                Files.move(tempFile, originalFile);
+                Files.move(tempFile, originalFile, StandardCopyOption.COPY_ATTRIBUTES);
             } finally {
                 readWriteLock.writeLock().unlock();
             }
