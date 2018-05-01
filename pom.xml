@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- powermock 2.0 has some beta issue so downgrade and ignore java 9 support for now -->
-        <powermock.version>2.0.0-beta.5</powermock.version>
+        <powermockVersion>2.0.0-beta.5</powermockVersion>
         <!--<powermock.version>2.0.0-beta.5</powermock.version>-->
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -112,19 +112,25 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-core</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.8.10</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

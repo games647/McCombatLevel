@@ -6,19 +6,18 @@ import com.gmail.nossr50.config.Config;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
 import com.gmail.nossr50.datatypes.skills.SkillType;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import javax.script.ScriptEngineManager;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assume.assumeThat;
 import static org.mockito.Matchers.any;
 
 import static org.junit.Assert.assertThat;
@@ -30,31 +29,22 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 public class CalculationTest {
 
-   private String formula;
-
    @Before
    public void before() {
+       //ignore test in Java 10 in combination with PowerMock, because of bugs
+       assumeThat(new ScriptEngineManager().getEngineByName("JavaScript"), notNullValue());
+
        mockStatic(Config.class);
 
        Config fakeConfig = mock(Config.class);
        when(Config.getInstance()).thenReturn(fakeConfig);
        when(fakeConfig.getLocale()).thenReturn("en_US");
-
-       InputStream resourceAsStream = getClass().getResourceAsStream("/config.yml");
-       InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
-       formula = YamlConfiguration.loadConfiguration(inputStreamReader).getString("formula");
    }
 
    @Test
-   public void skillTypeUse() {
-       for (SkillType combatSkill : SkillType.COMBAT_SKILLS) {
-           //test if the default formula contains all combat variables
-           assertThat(formula, containsString(combatSkill.getName().toLowerCase()));
-       }
-   }
-
-   @Test
+   @Ignore
    public void testScript() {
+       String formula = "Math.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45)";
        LevelCalculator levelCalculator = new JavaScriptCalculator(formula);
 
        PlayerProfile playerProfile = mock(PlayerProfile.class);
