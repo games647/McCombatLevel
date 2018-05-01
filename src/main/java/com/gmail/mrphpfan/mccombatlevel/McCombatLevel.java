@@ -25,7 +25,7 @@ import org.bukkit.scoreboard.Scoreboard;
 public class McCombatLevel extends JavaPlugin {
 
     //cached combat levels of online players
-    //This have to be concurrent because we acess it from a different thread(AsyncChatEvent)
+    //This have to be concurrent because we access it from a different thread(AsyncChatEvent)
     private final Map<String, Integer> playerLevels = new ConcurrentHashMap<>();
 
     private LevelCalculator levelCalculator;
@@ -43,7 +43,7 @@ public class McCombatLevel extends JavaPlugin {
     private ChatColor prefixLevel = ChatColor.DARK_GREEN;
     private String levelUpMessage = "You leveled up to a new combat level of: {1}";
     private String broadcastMessage = "";
-    private boolean ranking = false;
+    private boolean ranking;
 
     public boolean isPrefixEnabled() {
         return enablePrefix;
@@ -174,7 +174,7 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     public void removeCachedLevels(Player player) {
-        final String playerName = player.getName();
+        String playerName = player.getName();
         playerLevels.remove(playerName);
         //prevent that objective will be too big
         scoreboardManger.remove(playerName);

@@ -27,7 +27,7 @@ public class JavaScriptCalculator implements LevelCalculator {
         Bindings variables = scriptEngine.createBindings();
 
         Map<String, Integer> collect = Stream.of(SkillType.values())
-                .collect(toMap(skill -> skill.getName().toLowerCase(), mcMMOProfile::getSkillLevel));
+                .collect(toMap(skill -> skill.name().toLowerCase(), mcMMOProfile::getSkillLevel));
         variables.putAll(collect);
 
         try {
