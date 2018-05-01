@@ -19,7 +19,7 @@ public class NpcCalculatorTask implements Runnable {
     public void run() {
         int level;
         if (offlineProfile.isLoaded()) {
-            //offline player succesfull found
+            //offline player successful found
             level = plugin.calculateLevel(offlineProfile);
         } else {
             level = defaultLevel;

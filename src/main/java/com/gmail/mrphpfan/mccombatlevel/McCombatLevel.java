@@ -151,7 +151,7 @@ public class McCombatLevel extends JavaPlugin {
     }
 
     public OptionalInt getLevel(Player player) {
-        Integer level = playerLevels.get(player);
+        Integer level = playerLevels.get(player.getName());
         if (level == null) {
             return OptionalInt.empty();
         }
