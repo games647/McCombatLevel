@@ -42,8 +42,6 @@ public class ConfigTest {
 
     @Test
     public void skillTypeUse() {
-        System.out.println("RUN");
-
         for (SkillType combatSkill : SkillType.COMBAT_SKILLS) {
             //test if the default formula contains all combat variables
             assertThat(formula, containsString(combatSkill.name().toLowerCase()));

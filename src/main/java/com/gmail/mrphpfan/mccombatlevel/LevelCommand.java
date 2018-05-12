@@ -61,7 +61,7 @@ public class LevelCommand implements CommandExecutor {
 
         OptionalInt level = plugin.getLevel((Player) sender);
         if (level.isPresent()) {
-            sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level);
+            sender.sendMessage(ChatColor.GOLD + "Combat level: " + ChatColor.DARK_GREEN + level.getAsInt());
         } else {
             sender.sendMessage(ChatColor.RED + "Not loaded yet");
         }
