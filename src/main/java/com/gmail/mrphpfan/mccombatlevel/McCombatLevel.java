@@ -89,11 +89,11 @@ public class McCombatLevel extends JavaPlugin {
     public void onEnable() {
         loadConfiguration();
 
-        if (enableTag) {
-            //Choose the main scoreboard in order to be compatible with for example ColoredTags
-            Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
-            scoreboardManger = new CombatScoreboard(mainScoreboard, displayName);
+        //Choose the main scoreboard in order to be compatible with for example ColoredTags
+        Scoreboard mainScoreboard = getServer().getScoreboardManager().getMainScoreboard();
+        scoreboardManger = new CombatScoreboard(mainScoreboard, displayName);
 
+        if (enableTag) {
             //check if there are any players on yet and set their levels
             for (Player online : Bukkit.getOnlinePlayers()) {
                 updateLevel(online);
