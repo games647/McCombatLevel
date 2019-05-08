@@ -14,9 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- powermock 2.0 has some beta issue so downgrade and ignore java 9 support for now -->
-        <powermockVersion>2.0.0-beta.5</powermockVersion>
-        <!--<powermock.version>2.0.0-beta.5</powermock.version>-->
+        <powermockVersion>2.0.2</powermockVersion>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -67,7 +65,6 @@
 
         <repository>
             <id>mvdw-software</id>
-            <name>MVdW Public Repositories</name>
             <url>http://repo.mvdw-software.be/content/groups/public/</url>
         </repository>
     </repositories>
@@ -104,8 +101,14 @@
         <dependency>
             <groupId>be.maximvdw</groupId>
             <artifactId>MVdWPlaceholderAPI</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>3.0.0-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Testing environment-->
@@ -130,7 +133,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.8.10</version>
+            <version>1.9.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
