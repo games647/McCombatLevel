@@ -166,7 +166,7 @@ public class McCombatLevel extends JavaPlugin {
 
     public void setLevel(Player player, int level) {
         // get old level or -1 if player was not loaded
-        int oldLevel = playerLevels.getOrDefault(player, -1);
+        int oldLevel = playerLevels.getOrDefault(player.getName(), -1);
         if (oldLevel != level) {
             PlayerCombatLevelChangeEvent event = new PlayerCombatLevelChangeEvent(player, oldLevel, level);
             getServer().getPluginManager().callEvent(event);
@@ -193,7 +193,7 @@ public class McCombatLevel extends JavaPlugin {
             try {
                 return levelCalculator.calculateLevel(mcMMOPlayer);
             } catch (Exception ex) {
-                getLogger().log(Level.WARNING, "Exception occured falling back", ex);
+                getLogger().log(Level.WARNING, "Exception occurred falling back", ex);
                 if (levelCalculator instanceof DefaultCalculator) {
                     //nulling the calculator, because event the default replacer created an exception
                     levelCalculator = null;

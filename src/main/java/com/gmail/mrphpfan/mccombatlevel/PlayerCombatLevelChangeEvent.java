@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerEvent;
  */
 public class PlayerCombatLevelChangeEvent extends PlayerEvent implements Cancellable {
 
-    private final static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
 
     private final int oldLevel;
     private int newLevel;
@@ -31,7 +31,7 @@ public class PlayerCombatLevelChangeEvent extends PlayerEvent implements Cancell
     /**
      * Returns the level the player had previously.
      *
-     * @return the previous level or <code>-1</code> if the player was not loaded before.
+     * @return the previous level or {@code -1} if the player was not loaded before.
      */
     public int getOldLevel() {
         return oldLevel;

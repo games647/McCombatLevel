@@ -1,8 +1,8 @@
 package com.gmail.mrphpfan.mccombatlevel.listener;
 
 import com.gmail.mrphpfan.mccombatlevel.McCombatLevel;
-import com.gmail.mrphpfan.mccombatlevel.task.ProfileWaitingTask;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
+import com.gmail.nossr50.events.players.McMMOPlayerProfileLoadEvent;
 
 import java.util.OptionalInt;
 
@@ -13,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -26,16 +25,16 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent joinEvent) {
-        final Player player = joinEvent.getPlayer();
-
-        Bukkit.getScheduler().runTaskLater(plugin, new ProfileWaitingTask(plugin, player), 20L);
+    @EventHandler
+    public void onProfileLoaded(McMMOPlayerProfileLoadEvent loadEvent) {
+        final Player player = loadEvent.getPlayer();
 
         //send them the scoreboard
         if (plugin.getScoreboardManger() != null) {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
+
+        plugin.updateLevel(player);
     }
 
     @EventHandler
@@ -76,7 +75,7 @@ public class PlayerListener implements Listener {
         if (combatLevel.isPresent()) {
             ChatColor prefixColor = plugin.getPrefixColor();
             ChatColor prefixBracket = plugin.getPrefixBracket();
-            chatEvent.setFormat(prefixBracket + "[" + prefixColor + combatLevel.getAsInt() + prefixBracket + "]"
+            chatEvent.setFormat(prefixBracket + "[" + prefixColor + combatLevel.getAsInt() + prefixBracket + ']'
                     + ChatColor.RESET + chatEvent.getFormat());
         }
     }

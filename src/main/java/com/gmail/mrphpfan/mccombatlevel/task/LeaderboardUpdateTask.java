@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -106,7 +106,7 @@ public class LeaderboardUpdateTask implements Runnable {
             toSave.clear();
         }
 
-        for (Map.Entry<UUID, PlayerStat> entry : copyToSave.entrySet()) {
+        for (Entry<UUID, PlayerStat> entry : copyToSave.entrySet()) {
             UUID uuid = entry.getKey();
             PlayerStat value = entry.getValue();
 

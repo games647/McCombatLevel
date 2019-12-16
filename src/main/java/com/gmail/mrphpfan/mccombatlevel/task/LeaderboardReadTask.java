@@ -74,7 +74,7 @@ public class LeaderboardReadTask implements Runnable {
         }
     }
 
-    private void display(List<PlayerStat> results, int maxPages) {
+    private void display(Iterable<PlayerStat> results, int maxPages) {
         sender.sendMessage(ChatColor.DARK_GREEN + "=== Page " + requestedPage + " / " + maxPages + " ===");
 
         int rank = 10 * (requestedPage - 1);
@@ -82,7 +82,7 @@ public class LeaderboardReadTask implements Runnable {
             String playerName = result.name;
             int combatLevel = result.statVal;
 
-            sender.sendMessage(ChatColor.GOLD + "" + rank + ". " + playerName + " level: " + combatLevel);
+            sender.sendMessage(ChatColor.GOLD + Integer.toString(rank) + ". " + playerName + " level: " + combatLevel);
             rank++;
         }
     }

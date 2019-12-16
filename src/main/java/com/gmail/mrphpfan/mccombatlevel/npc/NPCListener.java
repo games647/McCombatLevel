@@ -31,7 +31,7 @@ public class NPCListener implements Listener {
     public void onNPCSpawn(NPCSpawnEvent npcSpawnEvent) {
         String npcName = npcSpawnEvent.getNPC().getName();
         if (lookupOffline && !isPlayerOnline(npcName)) {
-            OfflineProfileLookupTask lookupTask = new OfflineProfileLookupTask(npcName, plugin, defaultValue);
+            Runnable lookupTask = new OfflineProfileLookupTask(npcName, plugin, defaultValue);
             //lookup and add
             Bukkit.getScheduler().runTaskAsynchronously(plugin, lookupTask);
         }

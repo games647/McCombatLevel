@@ -39,7 +39,7 @@ public class RankingCommand implements CommandExecutor {
     }
 
     private void queueReadRequest(CommandSender sender, int page) {
-        LeaderboardReadTask leaderboardReadTask = new LeaderboardReadTask(plugin, sender, page);
+        Runnable leaderboardReadTask = new LeaderboardReadTask(plugin, sender, page);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, leaderboardReadTask);
     }
 }

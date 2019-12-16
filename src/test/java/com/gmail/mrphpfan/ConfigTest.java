@@ -3,6 +3,7 @@ package com.gmail.mrphpfan;
 import com.gmail.nossr50.config.Config;
 import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,7 @@ public class ConfigTest {
     private String formula;
 
     @Before
-    public void before() {
+    public void before() throws IOException {
         mockStatic(Config.class);
 
         Config fakeConfig = mock(Config.class);
@@ -36,8 +37,9 @@ public class ConfigTest {
         when(fakeConfig.getLocale()).thenReturn("en_US");
 
         InputStream resourceAsStream = getClass().getResourceAsStream("/config.yml");
-        InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
-        formula = YamlConfiguration.loadConfiguration(inputStreamReader).getString("formula");
+        try (InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8)) {
+            formula = YamlConfiguration.loadConfiguration(inputStreamReader).getString("formula");
+        }
     }
 
     @Test
