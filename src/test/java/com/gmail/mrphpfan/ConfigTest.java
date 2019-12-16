@@ -1,7 +1,7 @@
 package com.gmail.mrphpfan;
 
 import com.gmail.nossr50.config.Config;
-import com.gmail.nossr50.datatypes.skills.SkillType;
+import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,7 +21,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest({SkillType.class, Config.class})
+@PrepareForTest({PrimarySkillType.class, Config.class})
 @RunWith(PowerMockRunner.class)
 public class ConfigTest {
 
@@ -42,7 +42,7 @@ public class ConfigTest {
 
     @Test
     public void skillTypeUse() {
-        for (SkillType combatSkill : SkillType.COMBAT_SKILLS) {
+        for (PrimarySkillType combatSkill : PrimarySkillType.COMBAT_SKILLS) {
             //test if the default formula contains all combat variables
             assertThat(formula, containsString(combatSkill.name().toLowerCase()));
         }

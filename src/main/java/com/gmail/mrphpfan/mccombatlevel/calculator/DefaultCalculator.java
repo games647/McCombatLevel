@@ -1,7 +1,7 @@
 package com.gmail.mrphpfan.mccombatlevel.calculator;
 
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
-import com.gmail.nossr50.datatypes.skills.SkillType;
+import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 
 import org.bukkit.util.NumberConversions;
 
@@ -12,22 +12,19 @@ public class DefaultCalculator implements LevelCalculator {
 
     @Override
     public int calculateLevel(PlayerProfile mcMMOProfile) {
-        int swords = getLevel(mcMMOProfile, SkillType.SWORDS);
-        int axes = getLevel(mcMMOProfile, SkillType.AXES);
-        int unarmed = getLevel(mcMMOProfile, SkillType.UNARMED);
-        int archery = getLevel(mcMMOProfile, SkillType.ARCHERY);
-        int taming = getLevel(mcMMOProfile, SkillType.TAMING);
-        int acrobatics = getLevel(mcMMOProfile, SkillType.ACROBATICS);
+        int swords = getLevel(mcMMOProfile, PrimarySkillType.SWORDS);
+        int axes = getLevel(mcMMOProfile, PrimarySkillType.AXES);
+        int unarmed = getLevel(mcMMOProfile, PrimarySkillType.UNARMED);
+        int archery = getLevel(mcMMOProfile, PrimarySkillType.ARCHERY);
+        int taming = getLevel(mcMMOProfile, PrimarySkillType.TAMING);
+        int acrobatics = getLevel(mcMMOProfile, PrimarySkillType.ACROBATICS);
 
-        return NumberConversions.round((unarmed + swords + axes + archery + .25 * acrobatics + .25 * taming) / 45);
+        double sum = unarmed + swords + axes + archery + 0.25 * acrobatics + 0.25 * taming;
+        return NumberConversions.round(sum / 45);
     }
 
-    private int getLevel(PlayerProfile mcMMOProfile, SkillType skillType) {
+    private int getLevel(PlayerProfile mcMMOProfile, PrimarySkillType skillType) {
         int skillLevel = mcMMOProfile.getSkillLevel(skillType);
-        if (skillLevel <= MAX_LEVEL) {
-            return skillLevel;
-        }
-
-        return MAX_LEVEL;
+        return Math.min(skillLevel, MAX_LEVEL);
     }
 }

@@ -4,7 +4,7 @@ import com.gmail.mrphpfan.mccombatlevel.calculator.JavaScriptCalculator;
 import com.gmail.mrphpfan.mccombatlevel.calculator.LevelCalculator;
 import com.gmail.nossr50.config.Config;
 import com.gmail.nossr50.datatypes.player.PlayerProfile;
-import com.gmail.nossr50.datatypes.skills.SkillType;
+import com.gmail.nossr50.datatypes.skills.PrimarySkillType;
 
 import javax.script.ScriptEngineManager;
 
@@ -25,7 +25,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@PrepareForTest({SkillType.class, Config.class})
+@PrepareForTest({PrimarySkillType.class, Config.class})
 @RunWith(PowerMockRunner.class)
 public class CalculationTest {
 
@@ -48,7 +48,7 @@ public class CalculationTest {
        LevelCalculator levelCalculator = new JavaScriptCalculator(formula);
 
        PlayerProfile playerProfile = mock(PlayerProfile.class);
-       when(playerProfile.getSkillLevel(any(SkillType.class))).thenReturn(100);
+       when(playerProfile.getSkillLevel(any(PrimarySkillType.class))).thenReturn(100);
        assertThat(10, is(levelCalculator.calculateLevel(playerProfile)));
    }
 }
