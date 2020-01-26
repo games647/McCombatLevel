@@ -25,16 +25,21 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onProfileLoaded(McMMOPlayerProfileLoadEvent loadEvent) {
-        final Player player = loadEvent.getPlayer();
+        Player player = loadEvent.getPlayer();
 
-        //send them the scoreboard
-        if (plugin.getScoreboardManger() != null) {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        }
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!player.isOnline())
+                return;
 
-        plugin.updateLevel(player);
+            //send them the scoreboard
+            if (plugin.getScoreboardManger() != null) {
+                player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+            }
+
+            plugin.updateLevel(player);
+        });
     }
 
     @EventHandler
