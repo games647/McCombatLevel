@@ -45,8 +45,6 @@ public class LeaderboardReadTask implements Runnable {
             int position = 1;
 
             try (BufferedReader reader = Files.newBufferedReader(leaderboardFile)) {
-                plugin.getLeaderboardUpdateTask().getReadWriteLock().readLock().lock();
-
                 String line = reader.readLine();
                 while (line != null && !line.isEmpty()) {
                     if (position >= startPos && position <= endPos) {
@@ -62,8 +60,6 @@ public class LeaderboardReadTask implements Runnable {
                     line = reader.readLine();
                     position++;
                 }
-            } finally {
-                plugin.getLeaderboardUpdateTask().getReadWriteLock().readLock().unlock();
             }
 
             int maxPages = NumberConversions.floor((double) position / 10);

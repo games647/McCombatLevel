@@ -15,8 +15,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -26,7 +24,6 @@ public class LeaderboardUpdateTask implements Runnable {
     private final McCombatLevel plugin;
 
     private final ConcurrentMap<UUID, PlayerStat> toSave = new ConcurrentHashMap<>();
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public LeaderboardUpdateTask(McCombatLevel plugin) {
         this.plugin = plugin;
@@ -38,10 +35,6 @@ public class LeaderboardUpdateTask implements Runnable {
         synchronized (this) {
             toSave.put(playerUUID, new PlayerStat(player.getName(), level));
         }
-    }
-
-    public ReadWriteLock getReadWriteLock() {
-        return readWriteLock;
     }
 
     @Override
@@ -59,7 +52,6 @@ public class LeaderboardUpdateTask implements Runnable {
 
             try (BufferedReader reader = Files.newBufferedReader(originalFile);
                  BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
-                readWriteLock.writeLock().lock();
 
                 updateExistingEntries(reader, writer);
                 appendNewEntries(writer);
@@ -68,8 +60,6 @@ public class LeaderboardUpdateTask implements Runnable {
 
                 Files.delete(originalFile);
                 Files.move(tempFile, originalFile, StandardCopyOption.COPY_ATTRIBUTES);
-            } finally {
-                readWriteLock.writeLock().unlock();
             }
         } catch (IOException ex) {
             plugin.getLogger().log(Level.SEVERE, "Error saving leaderboard", ex);
